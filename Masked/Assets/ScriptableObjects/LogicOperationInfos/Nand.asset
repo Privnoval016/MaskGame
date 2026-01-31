@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8315a6fbee28422f94d01f472a8f3af4, type: 3}
   m_Name: Nand
   m_EditorClassIdentifier: 
-  operation: 1
+  operation: 3
   baseColor: {r: 0.09411764, g: 0.479461, b: 0.93333334, a: 1}
   darkColor: {r: 0.0980392, g: 0.24782097, b: 0.50980395, a: 1}
   hdrColor: {r: 25.301598, g: 75.2886, b: 105.05663, a: 1}

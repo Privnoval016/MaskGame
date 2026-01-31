@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /**
  * <summary>
@@ -84,7 +85,7 @@ public class BeatSplitter : MonoBehaviour
         while (BeatQueue.Count > 0 && BeatQueue.Peek().beatStamp <= currentBeat)
         {
             BeatDataEntry beatEntry = BeatQueue.Dequeue();
-            int truthValue = beatEntry.beatStamp % 2; // Example: Using even/odd beat stamps as truth values (0 or 1)
+            int truthValue = Random.Range(0, 2); // Randomly assign truth value (0 or 1) for the note
             int[] noteSpawnIndicesForBeat = GetNoteSpawnIndicesForBeat(truthValue);
             SpawnNotesAtBeat(beatEntry.beatStamp, noteSpawnIndicesForBeat, beatEntry.laneIndex);
         }
@@ -93,7 +94,7 @@ public class BeatSplitter : MonoBehaviour
     private void TryUpdateCheckpoints()
     {
         // Calculate the current beat based on the song timer and beat duration
-        int currentBeat = BeatMapManager.Instance.CurrentBeatStamp;
+        float currentBeat = BeatMapManager.Instance.CurrentBeatStamp;
 
         // Update checkpoints for all that are due
         while (CheckpointQueue.Count > 0 && CheckpointQueue.Peek().beatStamp <= currentBeat)
@@ -112,7 +113,7 @@ public class BeatSplitter : MonoBehaviour
      * <param name="noteSpawnIndices">An array defining which spawn locations to use for the notes</param>
      * <param name="lane">The lane index in which to spawn the notes</param>
      */
-    private void SpawnNotesAtBeat(int beatStamp, int[] noteSpawnIndices, int lane)
+    private void SpawnNotesAtBeat(float beatStamp, int[] noteSpawnIndices, int lane)
     {
         for (int i = 0; i < noteSpawnIndices.Length; i++)
         {

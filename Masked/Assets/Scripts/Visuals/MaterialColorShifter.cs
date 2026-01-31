@@ -1,14 +1,18 @@
+using System;
 using System.Collections.Generic;
 using PrimeTween;
 using UnityEngine;
 
 public class MaterialColorShifter : MonoBehaviour
 {
+    public float shiftDuration = 0.3f;
     [Header("Materials")]
     [SerializeField] private Material[] materialsToShiftRegular;
 
     [SerializeField] private Material[] materialsToShiftDark;
     [SerializeField] private Material[] materialsToShiftHDR;
+    
+    [SerializeField] private CustomBaseColorOverride[] customBaseColorOverrides;
 
     [Header("Logic Mapping")]
     [SerializeField] private LogicOperationInfo[] logicOperationInfos;
@@ -42,13 +46,21 @@ public class MaterialColorShifter : MonoBehaviour
         foreach (var mat in materialsToShiftRegular)
         {
             if (mat == null) continue;
-            Tween.MaterialProperty(mat, BaseColorID, info.baseColor, 0.3f);
+            Tween.MaterialProperty(mat, BaseColorID, info.baseColor, shiftDuration);
+        }
+        
+        // Custom base color overrides
+        foreach (var overrideEntry in customBaseColorOverrides)
+        {
+            if (overrideEntry.material == null) continue;
+            int propertyID = Shader.PropertyToID(overrideEntry.propertyName);
+            Tween.MaterialProperty(overrideEntry.material, propertyID, info.baseColor, shiftDuration);
         }
 
         foreach (var mat in materialsToShiftDark)
         {
             if (mat == null) continue;
-            Tween.MaterialProperty(mat, BaseColorID, info.darkColor, 0.3f);
+            Tween.MaterialProperty(mat, BaseColorID, info.darkColor, shiftDuration);
         }
 
         // Emission / HDR materials
@@ -60,7 +72,15 @@ public class MaterialColorShifter : MonoBehaviour
 
             // IMPORTANT: emission should be color * intensity
             Color emission = info.hdrColor;
-            Tween.MaterialProperty(mat, EmissionColorID, emission, 0.3f);
+            Tween.MaterialProperty(mat, EmissionColorID, emission, shiftDuration);
         }
+    }
+
+    [Serializable]
+    public struct CustomBaseColorOverride
+    {
+        public Material material;
+        public string propertyName;
+        
     }
 }

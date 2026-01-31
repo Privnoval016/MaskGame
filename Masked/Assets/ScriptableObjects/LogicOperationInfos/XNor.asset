@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8315a6fbee28422f94d01f472a8f3af4, type: 3}
   m_Name: XNor
   m_EditorClassIdentifier: 
-  operation: 1
+  operation: 5
   baseColor: {r: 0.39476112, g: 0.21106264, b: 0.8773585, a: 1}
   darkColor: {r: 0.23699296, g: 0.0980392, b: 0.50980395, a: 1}
   hdrColor: {r: 40.30655, g: 25.301598, b: 105.05663, a: 1}

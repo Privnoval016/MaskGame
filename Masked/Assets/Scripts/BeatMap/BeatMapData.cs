@@ -16,23 +16,12 @@ public class BeatMapData : ScriptableObject
     
     [Header("Logic Data")]
     public LogicOperation[] allowedOperations; // Logic operations allowed in this beatmap
-
-    private void OnValidate()
-    {
-        if (beatDataEntries == null) return;
-        // sort beat data entries by beatStamp
-        Array.Sort(beatDataEntries, (a, b) => a.beatStamp.CompareTo(b.beatStamp));
-        
-        if (checkpoints == null) return;
-        // sort checkpoints by beatStamp
-        Array.Sort(checkpoints, (a, b) => a.beatStamp.CompareTo(b.beatStamp));
-    }
 }
 
 [Serializable]
 public class BeatDataEntry
 {
-    public int beatStamp; // The beat at which the note should be hit
+    public float beatStamp; // The beat at which the note should be hit
     public int laneIndex; // The lane index this note is assigned to
 }
 
@@ -40,5 +29,5 @@ public class BeatDataEntry
 public class BeatMapCheckpoint
 {
     public string checkpointName; // A name or identifier for the checkpoint
-    public int beatStamp; // The beat at which the checkpoint occurs
+    public float beatStamp; // The beat at which the checkpoint occurs
 }

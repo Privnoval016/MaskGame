@@ -11,18 +11,21 @@ public class BeatMapManager : Singleton<BeatMapManager>
     
     [Header("Startup Settings")]
     public BeatMapData beatMapData;
+    public MusicManager musicManager;
     public float startupDelay = 2f; // Delay before the first beat spawns, to give player time to prepare and account for initial note travel time
     public float BeatDuration => 60f / beatMapData.bpm; // Duration of a single beat in seconds.
+    
+    private bool musicBegan = false;
     
     public int numberOfLanes = 4; // Total number of lanes available (valid note indices: 0 to numberOfLanes - 1)
     public int numberOfSpawnLocations = 2; // Number of different spawn locations for notes (right now top and bottom)
     
-    public int CurrentBeatStamp => Mathf.FloorToInt(SongTimer / BeatDuration);
+    public float CurrentBeatStamp => SongTimer / BeatDuration;
 
-    [SerializeField] private int beatStamp;
+    [SerializeField] private float beatStamp;
 
-    [Header("Runtime Values")] 
-    public LogicOperation activeLogicOperation = LogicOperation.Or;
+    [Header("Runtime Values")] public LogicOperation activeLogicOperation = LogicOperation.Or;
+    public float noteHitWindow = 0.15f; // Time window in seconds within which a note can be hit successfully
     
     private EventBinding<ButtonPressedEvent> buttonPressedBinding;
     
@@ -59,6 +62,12 @@ public class BeatMapManager : Singleton<BeatMapManager>
     {
         beatStamp = CurrentBeatStamp;
         SongTimer += Time.deltaTime;
+        
+        if (!musicBegan && SongTimer >= 0f)
+        {
+            musicManager.PlayMusic(beatMapData.clip);
+            musicBegan = true;
+        }
     }
 
     private void OnButtonPressed(ButtonPressedEvent e)
@@ -66,7 +75,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
         List<LogicNote> notesOnBeat = new List<LogicNote>();
         foreach (var note in activeLogicNotes)
         {
-            if (note.beatStamp == CurrentBeatStamp && note.laneIndex == e.buttonIndex)
+            if (Mathf.Abs(note.beatStamp - beatStamp) <= noteHitWindow / BeatDuration)
             {
                 notesOnBeat.Add(note);
             }

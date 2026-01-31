@@ -29,7 +29,7 @@ public class NoteSpawner : MonoBehaviour
      * <param name="parity">The parity of the note (e.g., for distinguishing between different types of notes).</param>
      * <param name="beatTravelTime">The time it takes for the note to travel from spawn to hit point in seconds.</param>
      */
-    public GameObject SpawnNoteInLane(int beatStamp, int laneIndex, int spawnLocationIndex, int parity, float beatTravelTime)
+    public GameObject SpawnNoteInLane(float beatStamp, int laneIndex, int spawnLocationIndex, int parity, float beatTravelTime)
     {
         LogicNote note = notePool.Get();
         

@@ -6,7 +6,7 @@ public class LogicNote : MonoBehaviour, IPoolable
 {
     [Header("Logic Note Settings")]
     public int noteID; // the notes id in the music track
-    public int beatStamp; // the beat at which the note should be hit
+    public float beatStamp; // the beat at which the note should be hit
     public int laneIndex; // the lane index this note is assigned to
     public int truthValue; // whether the note is a 0 bit or a 1 bit
     
@@ -22,7 +22,7 @@ public class LogicNote : MonoBehaviour, IPoolable
      * Moves the note along its path using the provided moveAction and returning to the pool upon completion.
      * </summary>
      */
-    public void MoveNote(int beat, int lane, int noteParity, Action<Transform, Action> moveAction)
+    public void MoveNote(float beat, int lane, int noteParity, Action<Transform, Action> moveAction)
     {
         if (!active) return;
 

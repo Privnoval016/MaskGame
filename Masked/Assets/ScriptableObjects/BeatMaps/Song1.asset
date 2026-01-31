@@ -12,17 +12,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cc8eeed2a41428e93acacc31037cea5, type: 3}
   m_Name: Song1
   m_EditorClassIdentifier: 
-  bpm: 120
-  beats: 170
-  clip: {fileID: 0}
+  bpm: 172
+  beats: 256
+  clip: {fileID: 8300000, guid: 56bed3a63f6214ad9977d75593304286, type: 3}
   beatDataEntries:
-  - beatStamp: 5
-    laneIndex: 1
-  - beatStamp: 10
+  - beatStamp: 0
     laneIndex: 0
+  - beatStamp: 1
+    laneIndex: 2
+  - beatStamp: 1.5
+    laneIndex: 1
+  - beatStamp: 4
+    laneIndex: 1
+  - beatStamp: 8
+    laneIndex: 2
   - beatStamp: 10
     laneIndex: 3
+  - beatStamp: 12
+    laneIndex: 3
+  - beatStamp: 16
+    laneIndex: 0
+  - beatStamp: 16
+    laneIndex: 2
+  - beatStamp: 20
+    laneIndex: 1
+  - beatStamp: 20
+    laneIndex: 3
+  - beatStamp: 24
+    laneIndex: 0
+  - beatStamp: 26.25
+    laneIndex: 1
+  - beatStamp: 28
+    laneIndex: 2
+  - beatStamp: 30.25
+    laneIndex: 3
+  - beatStamp: 32
+    laneIndex: 0
+  - beatStamp: 32
+    laneIndex: 2
+  - beatStamp: 36
+    laneIndex: 1
+  - beatStamp: 36
+    laneIndex: 3
+  - beatStamp: 38.25
+    laneIndex: 2
+  - beatStamp: 40
+    laneIndex: 0
+  - beatStamp: 40
+    laneIndex: 2
   checkpoints:
-  - checkpointName: 
-    beatStamp: 7
-  allowedOperations: 0100000000000000
+  - checkpointName: Checkpoint 2
+    beatStamp: 32
+  - checkpointName: Checkpoint 3
+    beatStamp: 96
+  - checkpointName: Checkpoint 1
+    beatStamp: 160
+  - checkpointName: Checkpoint 4
+    beatStamp: 232
+  - checkpointName: Checkpoint 5
+    beatStamp: 264
+  allowedOperations: 010000000000000002000000040000000300000005000000
