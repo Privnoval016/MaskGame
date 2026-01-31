@@ -148,6 +148,8 @@ public class BeatMapManager : Singleton<BeatMapManager>
         
         materialColorShifter.ShiftColors(activeLogicOperation);
         
+        SoundEffectManager.Instance.PlaySoundEffect(SoundEffectManager.Instance.operationChange);
+        
         // Fire an event to notify other systems of the checkpoint reached and logic operation change
         EventBus<CheckpointReachedEvent>.Raise(new CheckpointReachedEvent(checkpoint, previousOperation, activeLogicOperation));
     }

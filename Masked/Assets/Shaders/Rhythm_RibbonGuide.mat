@@ -55,8 +55,8 @@ Material:
     - _SymmetricWidth: 1
     m_Colors:
     - _BaseColor: {r: 0.049999982, g: 0.059999965, b: 0.07999996, a: 1}
-    - _CoreColor: {r: 2.3733072, g: 1.0447285, b: 1.9107094, a: 1}
-    - _GlowColor: {r: 0.62183064, g: 0.37579298, b: 0.4963085, a: 1}
+    - _CoreColor: {r: 3.2830188, g: 1.2522439, b: 0.78978276, a: 1}
+    - _GlowColor: {r: 0.83018863, g: 0.5189985, b: 0.24670702, a: 1}
     - _LogicStateA: {r: 0.19999996, g: 0.9, b: 1, a: 1}
     - _LogicStateB: {r: 0.9, g: 0.29999998, b: 0.8, a: 1}
   m_BuildTextureStacks: []

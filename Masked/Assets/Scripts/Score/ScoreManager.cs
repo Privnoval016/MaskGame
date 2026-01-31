@@ -10,6 +10,7 @@ public class ScoreManager : MonoBehaviour
     public float comboMultiplier = 1f;
     public Vector2 incrementPerCombo = new Vector2(0.1f, 50); // (increment, combo interval to apply)
     public float maxComboMultiplier = 2f;
+    public float maxScore = 1000000f;
     
     [Header("Score Tracking")]
     public float totalScore = 0;
@@ -78,5 +79,7 @@ public class ScoreManager : MonoBehaviour
         
         // Update combo multiplier
         comboMultiplier = 1f + Mathf.Min(maxComboMultiplier - 1f, Mathf.Floor(allCombo / incrementPerCombo.y) * incrementPerCombo.x);
+        
+        EventBus<ScoreChangedEvent>.Raise(new ScoreChangedEvent(totalScore, allCombo, correctCombo, maxScore));
     }
 }
