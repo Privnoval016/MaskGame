@@ -14,10 +14,9 @@ public class NotePath : MonoBehaviour
     public Action<Transform, Action> GenerateNotePath(float totalTravelTime)
     {
         float segmentTime = totalTravelTime / (waypoints.Length - 1);
-        // placeholder for now
         return (target, onComplete) =>
         {
-            target.position = waypoints[laneIndex].position; // Start at the first waypoint
+            target.position = waypoints[0].position; // Start at the first waypoint
             // Create a tween sequence to move through waypoints
             Sequence sequence = Sequence.Create();
             

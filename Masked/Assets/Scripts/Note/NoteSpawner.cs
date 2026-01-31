@@ -33,23 +33,18 @@ public class NoteSpawner : MonoBehaviour
     {
         LogicNote note = notePool.Get();
         
-        Debug.Log($"Spawning note at beatStamp {beatStamp}, laneIndex {laneIndex}, spawnLocationIndex {spawnLocationIndex}, parity {parity}");
         
         NotePathCollection pathCollection = notePaths[spawnLocationIndex];
         NotePath path = Array.Find(pathCollection.paths, p => p.laneIndex == laneIndex);
         if (path == null) 
         {
-            Debug.Log($"Available lane indices for spawnLocationIndex {spawnLocationIndex}: {string.Join(", ", Array.ConvertAll(pathCollection.paths, p => p.laneIndex.ToString()))}");
             Debug.LogError($"No NotePath found for laneIndex {laneIndex} in spawnLocationIndex {spawnLocationIndex}");
             notePool.Return(note);
             return null;
         }
         
-        Debug.Log($"Spawning note at beatStamp {beatStamp}, pathCollection: {path}");
-        
         Action<Transform, Action> moveAction = path.GenerateNotePath(beatTravelTime);
         note.MoveNote(beatStamp, laneIndex, parity, moveAction);
-        Debug.Log($"Spawned note at beatStamp {beatStamp}, laneIndex {laneIndex}, spawnLocationIndex {spawnLocationIndex}, parity {parity} at real position {note.transform.position}");
         return note.gameObject;
     }
 }

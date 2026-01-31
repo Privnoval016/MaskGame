@@ -8,11 +8,14 @@ public class LogicNote : MonoBehaviour, IPoolable
     public int noteID; // the notes id in the music track
     public int beatStamp; // the beat at which the note should be hit
     public int laneIndex; // the lane index this note is assigned to
-    public int parity; // whether the note is a 0 bit or a 1 bit
+    public int truthValue; // whether the note is a 0 bit or a 1 bit
     
     private bool active = false;
     public bool? successfullyHit;
     public bool broadcastingNote = false;
+    
+    public MeshRenderer noteRenderer;
+    public Material[] noteMaterials; // 0: False Material, 1: True Material
 
     /**
      * <summary>
@@ -26,7 +29,13 @@ public class LogicNote : MonoBehaviour, IPoolable
         gameObject.SetActive(true);
         beatStamp = beat;
         laneIndex = lane;
-        parity = noteParity;
+        truthValue = noteParity;
+
+        // Set material based on truth value
+        if (noteMaterials != null && noteMaterials.Length >= 2 && noteRenderer != null)
+        {
+            noteRenderer.material = truthValue == 1 ? noteMaterials[1] : noteMaterials[0];
+        }
         
         BeatMapManager.Instance.RegisterLogicNote(this);
         

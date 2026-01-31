@@ -84,7 +84,6 @@ public class BeatSplitter : MonoBehaviour
         while (BeatQueue.Count > 0 && BeatQueue.Peek().beatStamp <= currentBeat)
         {
             BeatDataEntry beatEntry = BeatQueue.Dequeue();
-            Debug.Log($"Spawning notes for beat stamp {beatEntry.beatStamp} in lane {beatEntry.laneIndex} at current beat {currentBeat}");
             int truthValue = beatEntry.beatStamp % 2; // Example: Using even/odd beat stamps as truth values (0 or 1)
             int[] noteSpawnIndicesForBeat = GetNoteSpawnIndicesForBeat(truthValue);
             SpawnNotesAtBeat(beatEntry.beatStamp, noteSpawnIndicesForBeat, beatEntry.laneIndex);
@@ -94,8 +93,7 @@ public class BeatSplitter : MonoBehaviour
     private void TryUpdateCheckpoints()
     {
         // Calculate the current beat based on the song timer and beat duration
-        float adjustedTime = BeatMapManager.Instance.SongTimer + BeatSpawnOffset;
-        int currentBeat = Mathf.FloorToInt(adjustedTime / BeatMapManager.Instance.BeatDuration);
+        int currentBeat = BeatMapManager.Instance.CurrentBeatStamp;
 
         // Update checkpoints for all that are due
         while (CheckpointQueue.Count > 0 && CheckpointQueue.Peek().beatStamp <= currentBeat)

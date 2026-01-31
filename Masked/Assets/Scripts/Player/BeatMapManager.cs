@@ -19,6 +19,8 @@ public class BeatMapManager : Singleton<BeatMapManager>
     
     public int CurrentBeatStamp => Mathf.FloorToInt(SongTimer / BeatDuration);
 
+    [SerializeField] private int beatStamp;
+
     [Header("Runtime Values")] 
     public LogicOperation activeLogicOperation = LogicOperation.Or;
     
@@ -29,15 +31,23 @@ public class BeatMapManager : Singleton<BeatMapManager>
     // store all active logic notes so we can check for hits by the player and deal with score accordingly
     private readonly HashSet<LogicNote> activeLogicNotes = new HashSet<LogicNote>();
     
+    private MaterialColorShifter materialColorShifter;
+    
     protected override void Awake()
     {
         base.Awake(); 
+        materialColorShifter = GetComponent<MaterialColorShifter>();
         SongTimer = -startupDelay; // Start the song timer with a negative offset to account for startup delay
         
         buttonPressedBinding = new EventBinding<ButtonPressedEvent>(OnButtonPressed);
         EventBus<ButtonPressedEvent>.Register(buttonPressedBinding);
         
         InitializeLogicSplitters();
+    }
+
+    private void Start()
+    {
+        materialColorShifter.ShiftColors(activeLogicOperation);
     }
 
     private void OnDisable()
@@ -47,6 +57,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
 
     private void Update()
     {
+        beatStamp = CurrentBeatStamp;
         SongTimer += Time.deltaTime;
     }
 
@@ -63,7 +74,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
         
         // Check to see if the direction of the button pressed matches the evaluated logic operation
         LogicSplitter splitter = GetLogicSplitter(activeLogicOperation);
-        int expectedTruthValue = splitter.EvaluateTruthValue(notesOnBeat.Select(n => n.parity).ToArray()) ? 1 : -1;
+        int expectedTruthValue = splitter.EvaluateTruthValue(notesOnBeat.Select(n => n.truthValue).ToArray()) ? 1 : -1;
         int buttonTruthValue = Mathf.RoundToInt(e.direction.y); // Up is 1, Down is -1
         
         if (expectedTruthValue == buttonTruthValue)
@@ -109,7 +120,17 @@ public class BeatMapManager : Singleton<BeatMapManager>
         LogicOperation previousOperation = activeLogicOperation;
         // Cycle to a random logic operation from the allowed operations in the beat map data
         Array allowedOps = beatMapData.allowedOperations;
-        activeLogicOperation = (LogicOperation)allowedOps.GetValue(UnityEngine.Random.Range(0, allowedOps.Length));
+        int currentIndex = Array.IndexOf(allowedOps, activeLogicOperation);
+        int newIndex = currentIndex;
+        while (newIndex == currentIndex)
+        {
+            newIndex = UnityEngine.Random.Range(0, allowedOps.Length);
+        }
+        activeLogicOperation = (LogicOperation) allowedOps.GetValue(newIndex);
+        
+        
+        materialColorShifter.ShiftColors(activeLogicOperation);
+        
         // Fire an event to notify other systems of the checkpoint reached and logic operation change
         EventBus<CheckpointReachedEvent>.Raise(new CheckpointReachedEvent(checkpoint, previousOperation, activeLogicOperation));
     }

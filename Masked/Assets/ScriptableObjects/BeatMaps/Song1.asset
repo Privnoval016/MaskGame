@@ -25,4 +25,4 @@ MonoBehaviour:
   checkpoints:
   - checkpointName: 
     beatStamp: 7
-  allowedOperations: 01000000
+  allowedOperations: 0100000000000000
