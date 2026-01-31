@@ -12,6 +12,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
     [Header("Startup Settings")]
     public BeatMapData beatMapData;
     public MusicManager musicManager;
+    public ScoreManager scoreManager;
     public float startupDelay = 2f; // Delay before the first beat spawns, to give player time to prepare and account for initial note travel time
     public float BeatDuration => 60f / beatMapData.bpm; // Duration of a single beat in seconds.
     
@@ -25,7 +26,6 @@ public class BeatMapManager : Singleton<BeatMapManager>
     [SerializeField] private float beatStamp;
 
     [Header("Runtime Values")] public LogicOperation activeLogicOperation = LogicOperation.Or;
-    public float noteHitWindow = 0.15f; // Time window in seconds within which a note can be hit successfully
     
     private EventBinding<ButtonPressedEvent> buttonPressedBinding;
     
@@ -75,7 +75,9 @@ public class BeatMapManager : Singleton<BeatMapManager>
         List<LogicNote> notesOnBeat = new List<LogicNote>();
         foreach (var note in activeLogicNotes)
         {
-            if (Mathf.Abs(note.beatStamp - beatStamp) <= noteHitWindow / BeatDuration)
+            // Check if the note is within the hit window, multiplied by BeatDuration to convert from beats to seconds
+            ScoreType noteHitWindow = scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - beatStamp) * BeatDuration);
+            if (noteHitWindow != ScoreType.Miss)
             {
                 notesOnBeat.Add(note);
             }
@@ -94,21 +96,21 @@ public class BeatMapManager : Singleton<BeatMapManager>
         
         if (expectedTruthValue == buttonTruthValue)
         {
+            Debug.Log($"{buttonTruthValue} - {expectedTruthValue}");
             // Correct input
             foreach (var note in notesOnBeat)
             {
-                note.successfullyHit = true;
+                note.ReturnToPool(true, scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - beatStamp) * BeatDuration));
             }
-            notesOnBeat[0].broadcastingNote = true; // Only need to broadcast one note hit event for the group
         }
         else
         {
+            Debug.Log($"{buttonTruthValue} - {expectedTruthValue}");
             // Incorrect input
             foreach (var note in notesOnBeat)
-            {
-                note.successfullyHit = false;
+            {                
+                note.ReturnToPool(false, scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - beatStamp) * BeatDuration));
             }
-            notesOnBeat[0].broadcastingNote = true; // Only need to broadcast one note hit event for the group
         }
         
     }
@@ -189,11 +191,13 @@ public struct CheckpointReachedEvent : IEvent
 public struct LogicNoteHitEvent : IEvent
 {
     public readonly LogicNote hitNote;
-    public readonly bool isCorrect;
+    public readonly bool? isCorrect;
+    public readonly ScoreType scoreType;
 
-    public LogicNoteHitEvent(LogicNote hitNote, bool isCorrect)
+    public LogicNoteHitEvent(LogicNote hitNote, bool? isCorrect, ScoreType scoreType)
     {
         this.hitNote = hitNote;
         this.isCorrect = isCorrect;
+        this.scoreType = scoreType;
     }
 }

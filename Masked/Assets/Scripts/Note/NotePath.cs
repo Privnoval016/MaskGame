@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using PrimeTween;
+using Sirenix.OdinInspector;
 
 public class NotePath : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class NotePath : MonoBehaviour
     public int laneIndex;
     public int samplesPerSegment = 100; // higher = smoother curve, more accurate constant speed
 
-    private Vector3[] pathSamples;
+    private Vector3[] pathSamples; // sampled points along the path in world space
     private float[] cumulativeDistances;
     private float totalPathLength;
 
@@ -184,4 +185,93 @@ public class NotePath : MonoBehaviour
 
         return point;
     }
+    
+    #region In Between Mesh
+    
+    [Button("Generate All Path Meshes")]
+    public void GeneratePathBetweenWaypoints(float width, Vector3 up)
+    {
+        if (pathSamples == null || pathSamples.Length == 0) PrecomputePath();
+
+        Mesh mesh = new Mesh();
+        mesh.name = "PathRibbonMesh";
+
+        int segmentCount = pathSamples.Length - 1;
+
+        var vertices = new List<Vector3>(segmentCount * 2);
+        var triangles = new List<int>(segmentCount * 6);
+        var uvs = new List<Vector2>(segmentCount * 2);
+
+        // Precompute total path length for continuous UV mapping
+        float totalLength = 0f;
+        var segmentLengths = new float[segmentCount];
+        for (int i = 0; i < segmentCount; i++)
+        {
+            segmentLengths[i] = Vector3.Distance(pathSamples[i], pathSamples[i + 1]);
+            totalLength += segmentLengths[i];
+        }
+
+        // Build a shared vertex strip instead of isolated quads.
+        // Each sample point becomes two vertices (left and right edge),
+        // and adjacent rows are stitched with two triangles.
+        float accumulatedLength = 0f;
+
+        for (int i = 0; i <= segmentCount; i++)
+        {
+            Vector3 point = transform.InverseTransformPoint(pathSamples[i]);
+
+            // Compute the forward direction at this sample point
+            Vector3 dir;
+            if (i == 0)
+                dir = (transform.InverseTransformPoint(pathSamples[1]) - point).normalized;
+            else if (i == segmentCount)
+                dir = (point - transform.InverseTransformPoint(pathSamples[i - 1])).normalized;
+            else
+                dir = (transform.InverseTransformPoint(pathSamples[i + 1]) - transform.InverseTransformPoint(pathSamples[i - 1])).normalized;
+
+            if (dir.sqrMagnitude < 0.0001f)
+                dir = Vector3.forward;
+
+            Vector3 side = Vector3.Cross(up, dir).normalized * (width * 0.5f);
+
+            // UV.x = continuous normalized distance along the full path [0, 1]
+            // UV.y = 0 on left edge, 1 on right edge
+            float u = totalLength > 0f ? accumulatedLength / totalLength : 0f;
+
+            int baseIndex = vertices.Count;
+            vertices.Add(point - side); // left edge
+            vertices.Add(point + side); // right edge
+            uvs.Add(new Vector2(u, 0f));
+            uvs.Add(new Vector2(u, 1f));
+
+            // Stitch triangles to the previous row (skip the very first row)
+            if (i > 0)
+            {
+                int prev = baseIndex - 2;
+                // Triangle 1: prev-left, curr-left, prev-right
+                triangles.Add(prev + 0);
+                triangles.Add(baseIndex + 0);
+                triangles.Add(prev + 1);
+                // Triangle 2: curr-left, curr-right, prev-right
+                triangles.Add(baseIndex + 0);
+                triangles.Add(baseIndex + 1);
+                triangles.Add(prev + 1);
+            }
+
+            // Accumulate length for the next iteration
+            if (i < segmentCount)
+                accumulatedLength += segmentLengths[i];
+        }
+
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles, 0);
+        mesh.SetUVs(0, uvs);
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+
+        GetComponent<MeshFilter>().sharedMesh = mesh;
+        GetComponent<MeshRenderer>().enabled = true;
+    }
+    
+    #endregion
 }

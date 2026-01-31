@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Extensions.EventBus;
 using UnityEngine;
 
@@ -10,9 +11,9 @@ public class LogicNote : MonoBehaviour, IPoolable
     public int laneIndex; // the lane index this note is assigned to
     public int truthValue; // whether the note is a 0 bit or a 1 bit
     
+    float pauseDuration = 0.2f; // brief pause before returning to pool to account for hitting the note slightly early or late
+    
     private bool active = false;
-    public bool? successfullyHit;
-    public bool broadcastingNote = false;
     
     public MeshRenderer noteRenderer;
     public Material[] noteMaterials; // 0: False Material, 1: True Material
@@ -39,17 +40,25 @@ public class LogicNote : MonoBehaviour, IPoolable
         
         BeatMapManager.Instance.RegisterLogicNote(this);
         
-        moveAction?.Invoke(transform, ReturnToPool);
+        moveAction?.Invoke(transform, () => ReturnToPool(null, ScoreType.Miss));
     }
     
-    private void ReturnToPool()
+    public void ReturnToPool(bool? successfullyHit, ScoreType scoreType)
     {
+        if (!active) return;
+        
+        StartCoroutine(PauseThenReturn(pauseDuration, successfullyHit, scoreType));
+    }
+    
+    private IEnumerator PauseThenReturn(float duration, bool? successfullyHit, ScoreType scoreType)
+    {
+        yield return new WaitForSeconds(successfullyHit == null ? duration : 0f); // Only pause if the note was missed
+        
+        if (!active) yield break; // Prevent double returning to pool
+        
         BeatMapManager.Instance.UnregisterLogicNote(this);
         
-        if (successfullyHit == null)
-            EventBus<LogicNoteHitEvent>.Raise(new LogicNoteHitEvent(this, false)); // Missed note TODO: Broadcasts twice when fully missed?
-        else if (broadcastingNote)
-            EventBus<LogicNoteHitEvent>.Raise(new LogicNoteHitEvent(this, successfullyHit ?? false)); // Broadcast hit/miss
+        EventBus<LogicNoteHitEvent>.Raise(new LogicNoteHitEvent(this, successfullyHit, scoreType));
         
         NotePool.Instance.Return(this);
     }

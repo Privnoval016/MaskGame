@@ -53,6 +53,9 @@ MonoBehaviour:
   - {fileID: 3519669444212190958}
   - {fileID: 2128864611437551488}
   - {fileID: 3547971251370060421}
+  width: 4
+  referenceNormal: {x: 0, y: -1, z: 0}
+  generateMeshOnAwake: 1
 --- !u!1001 &1617080108481916079
 PrefabInstance:
   m_ObjectHideFlags: 0

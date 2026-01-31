@@ -11,9 +11,12 @@ public class MaterialColorShifter : MonoBehaviour
 
     [SerializeField] private Material[] materialsToShiftDark;
     [SerializeField] private Material[] materialsToShiftHDR;
+    [SerializeField] private Material[] materialsToShiftMediumHDR;
     
     [SerializeField] private CustomBaseColorOverride[] customBaseColorOverrides;
 
+    [SerializeField] private Material scrollingMaterial;
+    
     [Header("Logic Mapping")]
     [SerializeField] private LogicOperationInfo[] logicOperationInfos;
 
@@ -76,6 +79,23 @@ public class MaterialColorShifter : MonoBehaviour
             Color emission = info.hdrColor;
             Tween.MaterialProperty(mat, EmissionColorID, emission, shiftDuration);
         }
+        
+        foreach (var mat in materialsToShiftMediumHDR)
+        {
+            if (mat == null) continue;
+
+            mat.EnableKeyword("_EMISSION");
+
+            // IMPORTANT: emission should be color * intensity
+            Color emission = info.mediumHdrColor;
+            Tween.MaterialProperty(mat, EmissionColorID, emission, shiftDuration);
+        }
+        
+        int neonColorID = Shader.PropertyToID("_CoreColor");
+        int haloColorID = Shader.PropertyToID("_GlowColor");
+        Sequence.Create()
+            .Group(Tween.MaterialProperty(scrollingMaterial, neonColorID, info.mediumHdrColor, shiftDuration))
+            .Group(Tween.MaterialProperty(scrollingMaterial, haloColorID, info.haloColor, shiftDuration));
     }
     
     public LogicOperationInfo GetCurrentLogicData()

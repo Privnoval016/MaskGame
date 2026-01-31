@@ -21,7 +21,7 @@ public class BeatMapDataEditor : Editor
     {
         serializedObject.Update();
         
-        DrawHeader();
+        DrawHeaderSection();
         EditorGUILayout.Space(10);
         
         DrawSongDataSection();
@@ -49,7 +49,7 @@ public class BeatMapDataEditor : Editor
         titleStyle.fontSize = 16;
         titleStyle.alignment = TextAnchor.MiddleCenter;
         
-        EditorGUILayout.LabelField("♪ BeatMap Editor ♪", titleStyle);
+        EditorGUILayout.LabelField("BeatMap Editor", titleStyle);
         EditorGUILayout.Space(5);
         
         // Quick stats
@@ -73,7 +73,7 @@ public class BeatMapDataEditor : Editor
     {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         
-        EditorGUILayout.LabelField("🎵 Song Data", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Song Data", EditorStyles.boldLabel);
         EditorGUILayout.Space(3);
         
         // Audio Clip - Make it prominent
@@ -85,7 +85,7 @@ public class BeatMapDataEditor : Editor
         
         if (beatMap.clip == null)
         {
-            EditorGUILayout.HelpBox("⚠ Assign an audio clip to enable playback in the editor", MessageType.Warning);
+            EditorGUILayout.HelpBox("Assign an audio clip to enable playback in the editor", MessageType.Warning);
         }
         
         EditorGUILayout.Space(5);
@@ -117,6 +117,32 @@ public class BeatMapDataEditor : Editor
         EditorGUILayout.EndVertical();
         
         EditorGUILayout.EndHorizontal();
+        
+        EditorGUILayout.Space(10);
+        
+        // Visual Data - Beat line settings
+        EditorGUILayout.LabelField("Visual Settings", EditorStyles.boldLabel);
+        EditorGUILayout.Space(3);
+        
+        EditorGUILayout.BeginHorizontal();
+        
+        EditorGUILayout.BeginVertical();
+        EditorGUILayout.LabelField("Beat Line Rate", EditorStyles.miniLabel);
+        SerializedProperty beatLineRateProp = serializedObject.FindProperty("beatLineRate");
+        beatLineRateProp.intValue = EditorGUILayout.IntField(beatLineRateProp.intValue);
+        EditorGUILayout.EndVertical();
+        
+        GUILayout.Space(20);
+        
+        EditorGUILayout.BeginVertical();
+        EditorGUILayout.LabelField("Super Beat Line Rate", EditorStyles.miniLabel);
+        SerializedProperty superBeatLineRateProp = serializedObject.FindProperty("superBeatLineRate");
+        superBeatLineRateProp.intValue = EditorGUILayout.IntField(superBeatLineRateProp.intValue);
+        EditorGUILayout.EndVertical();
+        
+        EditorGUILayout.EndHorizontal();
+        
+        EditorGUILayout.HelpBox("Beat Line Rate: spawn a beat line every N beats\nSuper Beat Line Rate: spawn emphasized line every N beats", MessageType.Info);
         
         EditorGUILayout.EndVertical();
     }
@@ -314,12 +340,12 @@ public class BeatMapDataEditor : Editor
         
         EditorGUILayout.BeginHorizontal();
         
-        if (GUILayout.Button("🎼 Open BeatMap Editor", GUILayout.Height(35)))
+        if (GUILayout.Button("Open BeatMap Editor", GUILayout.Height(35)))
         {
             BeatMapEditorWindow.ShowWindow();
         }
         
-        if (GUILayout.Button("💾 Save", GUILayout.Height(35), GUILayout.Width(80)))
+        if (GUILayout.Button("Save", GUILayout.Height(35), GUILayout.Width(80)))
         {
             EditorUtility.SetDirty(beatMap);
             AssetDatabase.SaveAssets();

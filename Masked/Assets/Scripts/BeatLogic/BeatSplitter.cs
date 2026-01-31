@@ -102,13 +102,11 @@ public class BeatSplitter : MonoBehaviour
         
         int currentBeatInt = Mathf.RoundToInt(currentBeat);
         
-        // only spawn every 2nd beat line to reduce clutter
-        if (currentBeatInt % 2 != 0) return;
+        if (currentBeatInt % 1 != 0) return;
 
         // Spawn beat lines on every beat on all lanes on all spawn locations
         
-        // Determine if this is a super line (every 8 beats)
-        bool isSuperLine = currentBeat % 8 == 0;
+        bool isSuperLine = currentBeatInt % 4 == 0;
 
         for (int lane = 0; lane < BeatMapManager.Instance.numberOfLanes; lane++)
         {

@@ -9,6 +9,10 @@ public class BeatMapData : ScriptableObject
 
     public int beats; // Total number of beats in the song
     public AudioClip clip;
+
+    [Header("Visual Data")] 
+    public int beatLineRate = 1; // spawn a beat line every n beats
+    public int superBeatLineRate = 4; // spawn a super beat line every n beats
     
     [Header("Beat Data")]
     public BeatDataEntry[] beatDataEntries;

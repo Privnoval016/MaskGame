@@ -12,7 +12,8 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _ANIMATE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -25,7 +26,7 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _Animate: 0
+    - _Animate: 1
     - _Brightness: 8.76
     - _FadeStart: 0.3
     - _LineLength: 1.02
@@ -34,7 +35,7 @@ Material:
     - _ScrollSpeed: 2.86
     - _Tiling: 73.18
     m_Colors:
-    - _LineColor: {r: 0.09411764, g: 0.479461, b: 0.93333334, a: 1}
-    - _ScrollDirection: {r: -0.12, g: -1, b: 0, a: 0}
+    - _LineColor: {r: 0.69154453, g: 0.36052942, b: 0.44537035, a: 1}
+    - _ScrollDirection: {r: -0.12, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

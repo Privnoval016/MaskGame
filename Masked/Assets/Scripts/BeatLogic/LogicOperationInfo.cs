@@ -12,4 +12,15 @@ public class LogicOperationInfo : ScriptableObject
     
     [ColorUsage(true, true)]
     public Color hdrColor;
+    
+    [ColorUsage(true, true)]
+    public Color mediumHdrColor;
+    
+    [ColorUsage(true, false)]
+    public Color neonColor;
+    
+    [ColorUsage(true, false)]
+    public Color haloColor;
+    
+    
 }

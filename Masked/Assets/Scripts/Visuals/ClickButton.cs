@@ -113,9 +113,9 @@ public class ClickButton : MonoBehaviour
         foreach (var meshRenderer in bitAfterImage.materialsForAlphaUpdate)
         {
             Sequence.Create()
-                .Chain(Tween.Position(t, endPos, afterimageLifetime, Ease.OutQuad))
-                .Chain(Tween.Scale(t, targetScale, afterimageLifetime, Ease.OutQuad))
-                .Chain(Tween.MaterialProperty(meshRenderer.material, bitAlphaID, 0f, afterimageLifetime, Ease.InQuad))
+                .Group(Tween.Position(t, endPos, afterimageLifetime, Ease.OutQuad))
+                .Group(Tween.Scale(t, targetScale, afterimageLifetime, Ease.OutQuad))
+                .Group(Tween.MaterialProperty(meshRenderer.material, bitAlphaID, 0f, afterimageLifetime, Ease.InQuad))
                 .OnComplete(() => Destroy(go));
         }
     }

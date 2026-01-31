@@ -250,16 +250,55 @@ public class BeatMapEditorWindow : EditorWindow
     
     private void DrawGridLines(Rect gridRect, float cellHeight, float cellWidth, int numRows)
     {
-        // Horizontal lines (beat rows)
-        for (int row = 0; row <= numRows; row++)
+        // Determine subdivision level based on zoom
+        float beatSubdivision = 1f;
+        
+        if (zoom >= 2f)
         {
-            float y = gridRect.y + row * (cellHeight + 2);
+            beatSubdivision = 0.25f; // Quarter beats
+        }
+        else if (zoom >= 1.5f)
+        {
+            beatSubdivision = 0.5f; // Half beats
+        }
+        
+        // Draw subdivided horizontal lines
+        float totalBeats = numRows * beatsPerRow;
+        int totalLines = Mathf.CeilToInt(totalBeats / beatSubdivision);
+        
+        for (int i = 0; i <= totalLines; i++)
+        {
+            float beat = i * beatSubdivision;
+            int row = Mathf.FloorToInt(beat / beatsPerRow);
+            float beatInRow = beat - (row * beatsPerRow);
+            float progress = beatInRow / beatsPerRow;
             
-            // Highlight every 4 beats
-            bool isMainBeat = (row % 4) == 0;
-            Color lineColor = isMainBeat ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.3f, 0.3f, 0.3f);
+            float y = gridRect.y + row * (cellHeight + 2) + (progress * cellHeight);
             
-            EditorGUI.DrawRect(new Rect(gridRect.x + timelineWidth, y, gridRect.width - timelineWidth, 1), lineColor);
+            // Determine line strength based on beat position
+            bool isMainBeat = Mathf.Abs(beat % 1f) < 0.01f;
+            bool isMeasure = Mathf.Abs(beat % 4f) < 0.01f;
+            
+            Color lineColor;
+            float lineWidth;
+            
+            if (isMeasure)
+            {
+                lineColor = new Color(0.6f, 0.6f, 0.6f);
+                lineWidth = 2f;
+            }
+            else if (isMainBeat)
+            {
+                lineColor = new Color(0.45f, 0.45f, 0.45f);
+                lineWidth = 1f;
+            }
+            else
+            {
+                lineColor = new Color(0.3f, 0.3f, 0.3f);
+                lineWidth = 1f;
+            }
+            
+            EditorGUI.DrawRect(new Rect(gridRect.x + timelineWidth, y, gridRect.width - timelineWidth, lineWidth), lineColor);
         }
         
         // Vertical lines (lanes)
@@ -279,13 +318,26 @@ public class BeatMapEditorWindow : EditorWindow
         labelStyle.alignment = TextAnchor.MiddleRight;
         labelStyle.normal.textColor = Color.white;
         
-        for (int row = 0; row < numRows; row++)
+        // Determine label frequency based on zoom
+        float labelFrequency = zoom >= 2f ? 0.5f : 1f;
+        
+        float totalBeats = numRows * beatsPerRow;
+        int totalLabels = Mathf.CeilToInt(totalBeats / labelFrequency);
+        
+        for (int i = 0; i <= totalLabels; i++)
         {
-            float beat = row * beatsPerRow;
-            float y = gridRect.y + row * (cellHeight + 2);
+            float beat = i * labelFrequency;
+            int row = Mathf.FloorToInt(beat / beatsPerRow);
+            float beatInRow = beat - (row * beatsPerRow);
+            float progress = beatInRow / beatsPerRow;
             
-            Rect labelRect = new Rect(gridRect.x, y, timelineWidth - 5, cellHeight);
-            EditorGUI.LabelField(labelRect, $"{beat:F1}", labelStyle);
+            float y = gridRect.y + row * (cellHeight + 2) + (progress * cellHeight);
+            
+            // Align label with the beat line
+            Rect labelRect = new Rect(gridRect.x, y - 8, timelineWidth - 5, 16);
+            
+            string labelText = labelFrequency >= 1f ? $"{beat:F0}" : $"{beat:F2}";
+            EditorGUI.LabelField(labelRect, labelText, labelStyle);
         }
     }
     
@@ -327,11 +379,23 @@ public class BeatMapEditorWindow : EditorWindow
         
         float y = gridRect.y + row * (cellHeight + 2) + (beatProgress * cellHeight);
         
-        Handles.color = Color.red;
-        Handles.DrawLine(
-            new Vector3(gridRect.x + timelineWidth, y, 0),
-            new Vector3(gridRect.x + gridRect.width, y, 0)
-        );
+        // Only draw if the playback line is visible in the grid
+        if (y >= gridRect.y && y <= gridRect.y + gridRect.height)
+        {
+            Handles.BeginGUI();
+            Handles.color = new Color(1f, 0f, 0f, 0.8f);
+            Handles.DrawLine(
+                new Vector3(gridRect.x + timelineWidth, y, 0),
+                new Vector3(gridRect.x + gridRect.width, y, 0)
+            );
+            
+            // Draw a thicker line for better visibility
+            Handles.DrawLine(
+                new Vector3(gridRect.x + timelineWidth, y + 1, 0),
+                new Vector3(gridRect.x + gridRect.width, y + 1, 0)
+            );
+            Handles.EndGUI();
+        }
     }
     
     private void HandleGridInput(Rect gridRect, float cellHeight, float cellWidth)
