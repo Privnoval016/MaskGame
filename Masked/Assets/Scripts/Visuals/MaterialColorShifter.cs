@@ -46,7 +46,8 @@ public class MaterialColorShifter : MonoBehaviour
         foreach (var mat in materialsToShiftRegular)
         {
             if (mat == null) continue;
-            Tween.MaterialProperty(mat, BaseColorID, info.baseColor, shiftDuration);
+            Color newColor = new Color(info.baseColor.r, info.baseColor.g, info.baseColor.b, mat.color.a);
+            Tween.MaterialProperty(mat, BaseColorID, newColor, shiftDuration);
         }
         
         // Custom base color overrides
@@ -60,7 +61,8 @@ public class MaterialColorShifter : MonoBehaviour
         foreach (var mat in materialsToShiftDark)
         {
             if (mat == null) continue;
-            Tween.MaterialProperty(mat, BaseColorID, info.darkColor, shiftDuration);
+            Color newColor = new Color(info.darkColor.r, info.darkColor.g, info.darkColor.b, mat.color.a);
+            Tween.MaterialProperty(mat, BaseColorID, newColor, shiftDuration);
         }
 
         // Emission / HDR materials
@@ -74,6 +76,16 @@ public class MaterialColorShifter : MonoBehaviour
             Color emission = info.hdrColor;
             Tween.MaterialProperty(mat, EmissionColorID, emission, shiftDuration);
         }
+    }
+    
+    public LogicOperationInfo GetCurrentLogicData()
+    {
+        var operation = BeatMapManager.Instance.activeLogicOperation;
+        if (logicOperationInfoDict.TryGetValue(operation, out var info))
+        {
+            return info;
+        }
+        return null;
     }
 
     [Serializable]

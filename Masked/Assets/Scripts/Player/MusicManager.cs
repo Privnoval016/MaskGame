@@ -16,8 +16,11 @@ public class MusicManager : MonoBehaviour
     {
         if (audioSource == null || clip == null) return;
         
+        Debug.Log(clip.name);
+        
         audioSource.clip = clip;
         audioSource.loop = loop;
+        audioSource.volume = 1f;
         audioSource.Play();
     }
 }

@@ -6,6 +6,7 @@ public class NoteSpawner : MonoBehaviour
 {
     [Header("Note Spawner Settings")]
     public NotePool notePool; // reference to the note pool
+    public BeatLinePool beatLinePool;
 
     [SerializeField] private NotePathCollection[] notePaths; // array of note path collections for different spawn rows
 
@@ -46,5 +47,24 @@ public class NoteSpawner : MonoBehaviour
         Action<Transform, Action> moveAction = path.GenerateNotePath(beatTravelTime);
         note.MoveNote(beatStamp, laneIndex, parity, moveAction);
         return note.gameObject;
+    }
+    
+    public GameObject SpawnBeatLineInLane(float beatStamp, int laneIndex, int spawnLocationIndex, bool isSuperLine, float beatTravelTime)
+    {
+        BeatLine beatLine = beatLinePool.Get();
+        
+        
+        NotePathCollection pathCollection = notePaths[spawnLocationIndex];
+        NotePath path = Array.Find(pathCollection.paths, p => p.laneIndex == laneIndex);
+        if (path == null) 
+        {
+            Debug.LogError($"No NotePath found for laneIndex {laneIndex} in spawnLocationIndex {spawnLocationIndex}");
+            beatLinePool.Return(beatLine);
+            return null;
+        }
+        
+        Action<Transform, Action> moveAction = path.GenerateNotePath(beatTravelTime, 0.22f);
+        beatLine.MoveBeatLine(beatStamp, laneIndex, moveAction, isSuperLine);
+        return beatLine.gameObject;
     }
 }

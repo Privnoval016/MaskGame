@@ -1,15 +1,36 @@
+using System;
 using Extensions.EventBus;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
 {
+    private PlayerInput playerInput;
+
+    private void Awake()
+    {
+        playerInput = new PlayerInput();
+        playerInput.Playing.SetCallbacks(this);
+    }
+
+    private void OnEnable()
+    {
+        playerInput.Playing.Enable();
+    }
+    
+    private void OnDisable()
+    {
+        playerInput.Playing.Disable();
+    }
+
     #region IPlayingActions Implementation
 
     public void OnTile1(InputAction.CallbackContext context)
     {
+        Debug.Log(context.performed);
         if (context.performed)
         {
+            Debug.Log($"Tile1 pressed with context: {context}");
             Vector2 direction = context.ReadValue<Vector2>();
             EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(0, direction));
         }

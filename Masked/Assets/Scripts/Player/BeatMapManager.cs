@@ -34,7 +34,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
     // store all active logic notes so we can check for hits by the player and deal with score accordingly
     private readonly HashSet<LogicNote> activeLogicNotes = new HashSet<LogicNote>();
     
-    private MaterialColorShifter materialColorShifter;
+    [HideInInspector] public MaterialColorShifter materialColorShifter;
     
     protected override void Awake()
     {
@@ -79,6 +79,12 @@ public class BeatMapManager : Singleton<BeatMapManager>
             {
                 notesOnBeat.Add(note);
             }
+        }
+        
+        if (notesOnBeat.Count == 0)
+        {
+            // No notes to evaluate
+            return;
         }
         
         // Check to see if the direction of the button pressed matches the evaluated logic operation

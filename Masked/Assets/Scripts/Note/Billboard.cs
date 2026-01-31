@@ -13,7 +13,13 @@ public class Billboard : MonoBehaviour
     {
         if (cam == null) return;
 
-        // Make the note face the camera
-        transform.forward = cam.transform.forward;
+        // Make the note billboard face the camera
+        Vector3 direction = transform.position - cam.transform.position;
+        direction.y = 0; // Keep only the horizontal direction
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = targetRotation;
+        }
     }
 }

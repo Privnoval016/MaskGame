@@ -36,6 +36,7 @@ public class BeatSplitter : MonoBehaviour
     {
         TrySpawnNotes();
         TryUpdateCheckpoints();
+        TrySpawnBeatLines();
     }
 
     #endregion
@@ -79,7 +80,7 @@ public class BeatSplitter : MonoBehaviour
     {
         // Calculate the current beat based on the song timer and beat duration
         float adjustedTime = BeatMapManager.Instance.SongTimer + BeatSpawnOffset;
-        int currentBeat = Mathf.FloorToInt(adjustedTime / BeatMapManager.Instance.BeatDuration);
+        float currentBeat = adjustedTime / BeatMapManager.Instance.BeatDuration;
 
         // Spawn notes for all beats that are due
         while (BeatQueue.Count > 0 && BeatQueue.Peek().beatStamp <= currentBeat)
@@ -88,6 +89,34 @@ public class BeatSplitter : MonoBehaviour
             int truthValue = Random.Range(0, 2); // Randomly assign truth value (0 or 1) for the note
             int[] noteSpawnIndicesForBeat = GetNoteSpawnIndicesForBeat(truthValue);
             SpawnNotesAtBeat(beatEntry.beatStamp, noteSpawnIndicesForBeat, beatEntry.laneIndex);
+        }
+    }
+    
+    private void TrySpawnBeatLines()
+    {
+        // Calculate the current beat based on the song timer and beat duration
+        float adjustedTime = BeatMapManager.Instance.SongTimer + BeatSpawnOffset;
+        float currentBeat = adjustedTime / BeatMapManager.Instance.BeatDuration;
+        
+        if (Mathf.Abs(currentBeat % 1) > 0.01f) return; // Only spawn on integer beats
+        
+        int currentBeatInt = Mathf.RoundToInt(currentBeat);
+        
+        // only spawn every 2nd beat line to reduce clutter
+        if (currentBeatInt % 2 != 0) return;
+
+        // Spawn beat lines on every beat on all lanes on all spawn locations
+        
+        // Determine if this is a super line (every 8 beats)
+        bool isSuperLine = currentBeat % 8 == 0;
+
+        for (int lane = 0; lane < BeatMapManager.Instance.numberOfLanes; lane++)
+        {
+            for (int spawnLocation = 0; spawnLocation < BeatMapManager.Instance.numberOfSpawnLocations; spawnLocation++)
+            {
+                Debug.Log($"Spawning Beat Line at Beat {currentBeat}, Lane {lane}, Spawn Location {spawnLocation}, IsSuperLine: {isSuperLine}");
+                noteSpawner.SpawnBeatLineInLane(currentBeat, lane, spawnLocation, isSuperLine, BeatSpawnOffset);
+            }
         }
     }
     
