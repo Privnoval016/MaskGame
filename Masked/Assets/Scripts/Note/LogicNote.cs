@@ -23,6 +23,7 @@ public class LogicNote : MonoBehaviour, IPoolable
     {
         if (!active) return;
 
+        gameObject.SetActive(true);
         beatStamp = beat;
         laneIndex = lane;
         parity = noteParity;
@@ -47,7 +48,6 @@ public class LogicNote : MonoBehaviour, IPoolable
     public void OnSpawn()
     {
         active = true;
-        gameObject.SetActive(true);
     }
     
     public void OnDespawn()

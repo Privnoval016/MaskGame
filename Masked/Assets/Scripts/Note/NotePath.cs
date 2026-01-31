@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using PrimeTween;
 
 public class NotePath : MonoBehaviour
 {
@@ -10,14 +11,25 @@ public class NotePath : MonoBehaviour
     /**
      * Returns an action that moves a Transform along the note path defined by the waypoints.
      */
-    public Action<Transform, Action> GenerateNotePath()
+    public Action<Transform, Action> GenerateNotePath(float totalTravelTime)
     {
+        float segmentTime = totalTravelTime / (waypoints.Length - 1);
         // placeholder for now
-        return (transform, onComplete) =>
+        return (target, onComplete) =>
         {
-            // TODO: placeholder movement logic
+            target.position = waypoints[laneIndex].position; // Start at the first waypoint
+            // Create a tween sequence to move through waypoints
+            Sequence sequence = Sequence.Create();
             
-            onComplete?.Invoke();
+            for (int i = 1; i < waypoints.Length; i++)
+            {
+                sequence.Chain(Tween.Position(target, waypoints[i].position, segmentTime, Ease.Linear));
+            }
+            
+            sequence.OnComplete(() =>
+            {
+                onComplete?.Invoke();
+            });
         };
     }
 }

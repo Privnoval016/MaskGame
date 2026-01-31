@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MEC;
 using UnityEngine;
-//using PrimeTween;
+using PrimeTween;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine.VFX;
 
@@ -60,20 +60,20 @@ namespace Extensions.Utils
 
         #region Tweening
 
-        // public static void TweenDistance(this Rigidbody rb, Vector3 direction, float distance, float time,
-        //     Ease ease = Ease.Default)
-        // {
-        //     direction.Normalize();
-        //     rb.linearVelocity = Vector3.zero;
-        //     Tween.RigidbodyMovePosition(rb, rb.position + direction * distance, time, ease);
-        // }
-        //
-        // public static void TweenDistance(this Transform t, Vector3 direction, float distance, float time,
-        //     Ease ease = Ease.Default)
-        // {
-        //     direction.Normalize();
-        //     Tween.Position(t, t.position + direction * distance, time, ease);
-        // }
+        public static void TweenDistance(this Rigidbody rb, Vector3 direction, float distance, float time,
+            Ease ease = Ease.Default)
+        {
+            direction.Normalize();
+            rb.linearVelocity = Vector3.zero;
+            Tween.RigidbodyMovePosition(rb, rb.position + direction * distance, time, ease);
+        }
+        
+        public static void TweenDistance(this Transform t, Vector3 direction, float distance, float time,
+            Ease ease = Ease.Default)
+        {
+            direction.Normalize();
+            Tween.Position(t, t.position + direction * distance, time, ease);
+        }
 
         #endregion
 

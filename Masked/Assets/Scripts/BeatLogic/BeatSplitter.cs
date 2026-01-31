@@ -42,14 +42,24 @@ public class BeatSplitter : MonoBehaviour
     private int[] GetNoteSpawnIndicesForBeat(int truthValue)
     {
         LogicSplitter splitter = BeatMapManager.Instance.GetLogicSplitter(BeatMapManager.Instance.activeLogicOperation);
-        return splitter.GetNotesForBeat(truthValue);
+        var oneLocations = splitter.GetNotesForBeat(truthValue);
+        
+        int[] allIndices = new int[BeatMapManager.Instance.numberOfSpawnLocations];
+        
+        for (int i = 0; i < oneLocations.Length; i++)
+        {
+            if (oneLocations[i] == 1) // set spawn index to 1 if we need to spawn a note there
+                allIndices[i] = 1;
+        }
+        
+        return allIndices; // returns an array where each index corresponds to a spawn location, with 1 indicating a note should be spawned there
     }
     
     #region Note Spawning
     
     private void InitializeBeatMap()
     {
-        // sort beat data entries by beat stamp to ensure correct order
+        // sort beat data entries in ascending order of beatStamp
         Array.Sort(BeatMapData.beatDataEntries, (a, b) => a.beatStamp.CompareTo(b.beatStamp));
         
         foreach (var beat in BeatMapData.beatDataEntries)
@@ -74,6 +84,7 @@ public class BeatSplitter : MonoBehaviour
         while (BeatQueue.Count > 0 && BeatQueue.Peek().beatStamp <= currentBeat)
         {
             BeatDataEntry beatEntry = BeatQueue.Dequeue();
+            Debug.Log($"Spawning notes for beat stamp {beatEntry.beatStamp} in lane {beatEntry.laneIndex} at current beat {currentBeat}");
             int truthValue = beatEntry.beatStamp % 2; // Example: Using even/odd beat stamps as truth values (0 or 1)
             int[] noteSpawnIndicesForBeat = GetNoteSpawnIndicesForBeat(truthValue);
             SpawnNotesAtBeat(beatEntry.beatStamp, noteSpawnIndicesForBeat, beatEntry.laneIndex);
@@ -105,15 +116,12 @@ public class BeatSplitter : MonoBehaviour
      */
     private void SpawnNotesAtBeat(int beatStamp, int[] noteSpawnIndices, int lane)
     {
-        foreach (int spawnIndex in noteSpawnIndices)
+        for (int i = 0; i < noteSpawnIndices.Length; i++)
         {
-            noteSpawner.SpawnNoteInLane(beatStamp, lane, spawnIndex, 1);
+            noteSpawner.SpawnNoteInLane(beatStamp, lane, i, noteSpawnIndices[i], BeatSpawnOffset);
+            
         }
 
-        foreach (int spawnIndex in noteSpawnIndices)
-        {
-            noteSpawner.SpawnNoteInLane(beatStamp, lane, spawnIndex, 0);
-        }
     }
     
     #endregion
