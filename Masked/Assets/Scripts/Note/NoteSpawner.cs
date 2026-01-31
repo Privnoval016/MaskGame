@@ -1,18 +1,48 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NoteSpawner : MonoBehaviour
 {
     [Header("Note Spawner Settings")]
-    public GameObject notePrefab; // the prefab for the notes to spawn
-    public Transform spawnPoint; // the point where notes are spawned
+    public NotePool notePool; // reference to the note pool
 
-    public void SpawnNote(int noteID, int laneIndex, NotePath path)
+    [SerializeField] private NotePathCollection[] notePaths; // array of note path collections for different spawn rows
+
+    private void OnValidate()
     {
-        GameObject noteObject = Instantiate(notePrefab, spawnPoint.position, Quaternion.identity);
-        LogicNote logicNote = noteObject.GetComponent<LogicNote>();
-        logicNote.noteID = noteID;
-        logicNote.laneIndex = laneIndex;
-        logicNote.path = path;
+        if (notePaths == null) return;
+        for (int i = 0; i < notePaths.Length; i++)
+        {            
+            Array.Sort(notePaths[i].paths, (a, b) => a.laneIndex.CompareTo(b.laneIndex));
+        }
+    }
+
+    /**
+     * <summary>
+     * Spawns a note in the specified lane and spawn location.
+     * </summary>
+     *
+     * <param name="beatStamp">The beat stamp at which the note should be hit.</param>
+     * <param name="laneIndex">The lane index in which to spawn the note.</param>
+     * <param name="spawnLocationIndex">The index of the spawn location (row) to use.</param>
+     * <param name="parity">The parity of the note (e.g., for distinguishing between different types of notes).</param>
+     */
+    public GameObject SpawnNoteInLane(int beatStamp, int laneIndex, int spawnLocationIndex, int parity)
+    {
+        LogicNote note = notePool.Get();
+        
+        NotePathCollection pathCollection = notePaths[spawnLocationIndex];
+        NotePath path = Array.Find(pathCollection.paths, p => p.laneIndex == laneIndex);
+        if (path == null) 
+        {
+            Debug.LogError($"No NotePath found for laneIndex {laneIndex} in spawnLocationIndex {spawnLocationIndex}");
+            notePool.Return(note);
+            return null;
+        }
+        
+        Action<Transform, Action> moveAction = path.GenerateNotePath();
+        note.MoveNote(beatStamp, laneIndex, parity, moveAction);
+        return note.gameObject;
     }
 }
-

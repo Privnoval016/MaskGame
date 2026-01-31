@@ -28,4 +28,16 @@ public class OrSplitter : LogicSplitter
         selectedLanes.CopyTo(result);
         return result;
     }
+    
+    public bool EvaluateTruthValue(int[] inputs)
+    {
+        foreach (var input in inputs)
+        {
+            if (input == 1)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

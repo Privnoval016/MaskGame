@@ -13,12 +13,17 @@ public class BeatMapData : ScriptableObject
     [Header("Beat Data")]
     public BeatDataEntry[] beatDataEntries;
     public BeatMapCheckpoint[] checkpoints;
+    
+    [Header("Logic Data")]
+    public LogicOperation[] allowedOperations; // Logic operations allowed in this beatmap
 
     private void OnValidate()
     {
+        if (beatDataEntries == null) return;
         // sort beat data entries by beatStamp
         Array.Sort(beatDataEntries, (a, b) => a.beatStamp.CompareTo(b.beatStamp));
         
+        if (checkpoints == null) return;
         // sort checkpoints by beatStamp
         Array.Sort(checkpoints, (a, b) => a.beatStamp.CompareTo(b.beatStamp));
     }

@@ -40,4 +40,17 @@ public class XorSplitter : LogicSplitter
             return result;
         }
     }
+    
+    public bool EvaluateTruthValue(int[] inputs)
+    {
+        int oneCount = 0;
+        foreach (var input in inputs)
+        {
+            if (input == 1)
+            {
+                oneCount++;
+            }
+        }
+        return oneCount % 2 == 1;
+    }
 }

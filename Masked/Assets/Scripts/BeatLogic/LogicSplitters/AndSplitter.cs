@@ -34,4 +34,16 @@ public class AndSplitter : LogicSplitter
         selectedLanes.CopyTo(result);
         return result;
     }
+    
+    public bool EvaluateTruthValue(int[] inputs)
+    {
+        foreach (var input in inputs)
+        {
+            if (input == 0)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
