@@ -14,6 +14,7 @@ public class CompositedNoteEffect : MonoBehaviour
     private static readonly int bitValueID = Shader.PropertyToID("_BitValue");
     private static readonly int bitAlphaID = Shader.PropertyToID("_BitAlpha");
     private static readonly int emissionColorID = Shader.PropertyToID("_EmissionColor");
+    private static readonly int baseColorID = Shader.PropertyToID("_Color");
     
     private void Awake()
     {
@@ -36,6 +37,14 @@ public class CompositedNoteEffect : MonoBehaviour
         
         GameObject noteObject = Instantiate(notePrefab, spawnPosition, Quaternion.identity);
         BitAfterImage bitAfterImage = noteObject.GetComponent<BitAfterImage>();
+        
+        foreach (var meshRenderer in bitAfterImage.allRenderers)
+        {
+            var color = e.successfullyHit
+                ? BeatMapManager.Instance.materialColorShifter.GetCurrentLogicData().InvertedNeonColor
+                : Color.black;
+            meshRenderer.material.SetColor(baseColorID, color);
+        }
         
         foreach (var meshRenderer in bitAfterImage.allRenderers)
         {
@@ -63,11 +72,13 @@ public struct NoteReachedEvent : IEvent
     public int laneIndex;
     public int truthValue;
     public float lifeTime;
+    public bool successfullyHit;
     
-    public NoteReachedEvent(int laneIndex, int truthValue, float lifeTime)
+    public NoteReachedEvent(int laneIndex, int truthValue, float lifeTime, bool successfullyHit)
     {
         this.laneIndex = laneIndex;
         this.truthValue = truthValue;
         this.lifeTime = lifeTime;
+        this.successfullyHit = successfullyHit;
     }
 }

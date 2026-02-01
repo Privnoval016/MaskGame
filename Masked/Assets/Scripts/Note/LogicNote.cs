@@ -67,7 +67,11 @@ public class LogicNote : MonoBehaviour, IPoolable
     {
         if (successfullyHit == null)
         {
-            EventBus<NoteReachedEvent>.Raise(new NoteReachedEvent(laneIndex, realTruthValue, duration));
+            EventBus<NoteReachedEvent>.Raise(new NoteReachedEvent(laneIndex, realTruthValue, duration, false));
+        }
+        else if (successfullyHit == true)
+        {
+            EventBus<NoteReachedEvent>.Raise(new NoteReachedEvent(laneIndex, realTruthValue, duration * 0.5f, true));
         }
         
         foreach (var meshRenderer in noteRenderers)

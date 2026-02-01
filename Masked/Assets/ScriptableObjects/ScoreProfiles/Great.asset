@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Great
   m_EditorClassIdentifier: 
   scoreType: 1
+  scoreText: Great!
   correctScoreIncrease: 500
   incorrectScoreIncrease: 250
   hitWindowDelta: 0.05

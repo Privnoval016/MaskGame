@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: XNor
   m_EditorClassIdentifier: 
   operation: 5
+  displayName: XNOR
   baseColor: {r: 0.39476112, g: 0.21106264, b: 0.8773585, a: 1}
   darkColor: {r: 0.23699296, g: 0.0980392, b: 0.50980395, a: 1}
   hdrColor: {r: 10.076637, g: 6.3253994, b: 26.264158, a: 1}

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Perfect
   m_EditorClassIdentifier: 
   scoreType: 0
+  scoreText: Perfect!
   correctScoreIncrease: 1000
   incorrectScoreIncrease: 500
   hitWindowDelta: 0.05

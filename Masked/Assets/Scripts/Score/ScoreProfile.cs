@@ -7,6 +7,9 @@ public class ScoreProfile : ScriptableObject
     [Header("Score Type")]
     public ScoreType scoreType;
 
+    [Header("UI Parameters")] 
+    public string scoreText;
+
     [Header("Score Parameters")]
     public int correctScoreIncrease; // points awarded for hitting the correct boolean note
     public int incorrectScoreIncrease; // even if you hit the wrong boolean note, you still get some points

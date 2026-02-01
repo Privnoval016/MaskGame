@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Nand
   m_EditorClassIdentifier: 
   operation: 3
+  displayName: NAND
   baseColor: {r: 0.09411764, g: 0.479461, b: 0.93333334, a: 1}
   darkColor: {r: 0.0980392, g: 0.24782097, b: 0.50980395, a: 1}
   hdrColor: {r: 6.3253994, g: 18.82215, b: 26.264158, a: 1}

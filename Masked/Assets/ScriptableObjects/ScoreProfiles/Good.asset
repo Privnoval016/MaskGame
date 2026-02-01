@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Good
   m_EditorClassIdentifier: 
   scoreType: 2
+  scoreText: Good
   correctScoreIncrease: 200
   incorrectScoreIncrease: 100
   hitWindowDelta: 0.05

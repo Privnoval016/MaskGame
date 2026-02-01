@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Or
   m_EditorClassIdentifier: 
   operation: 1
+  displayName: OR
   baseColor: {r: 0.18758237, g: 0.93333334, b: 0.09411764, a: 1}
   darkColor: {r: 0.098648295, g: 0.509434, b: 0.0985226, a: 1}
   hdrColor: {r: 8.261591, g: 26.264158, b: 6.3253994, a: 1}

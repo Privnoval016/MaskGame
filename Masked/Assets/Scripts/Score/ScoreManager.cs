@@ -95,7 +95,8 @@ public class ScoreManager : MonoBehaviour
         
         // Update combo multiplier
         comboMultiplier = 1f + Mathf.Min(maxComboMultiplier - 1f, Mathf.Floor(allCombo / incrementPerCombo.y) * incrementPerCombo.x);
-        
-        EventBus<ScoreChangedEvent>.Raise(new ScoreChangedEvent(totalScore, allCombo, correctCombo, maxScore));
+
+        var color = e.isCorrect == true ? BeatMapManager.Instance.materialColorShifter.GetCurrentLogicData().InvertedColor : Color.white;
+        EventBus<ScoreChangedEvent>.Raise(new ScoreChangedEvent(totalScore, maxScore, allCombo, correctCombo, profile, color));
     }
 }

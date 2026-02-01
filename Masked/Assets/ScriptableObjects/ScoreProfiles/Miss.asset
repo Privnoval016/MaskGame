@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Miss
   m_EditorClassIdentifier: 
   scoreType: 3
+  scoreText: Miss...
   correctScoreIncrease: 0
   incorrectScoreIncrease: 0
   hitWindowDelta: 100
