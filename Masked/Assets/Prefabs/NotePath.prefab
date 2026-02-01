@@ -323,6 +323,7 @@ MonoBehaviour:
   - {fileID: 2615654445495256662}
   laneIndex: 0
   samplesPerSegment: 100
+  zOffset: 2.1
 --- !u!33 &3580701208979373838
 MeshFilter:
   m_ObjectHideFlags: 0

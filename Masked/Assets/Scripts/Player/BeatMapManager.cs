@@ -75,6 +75,8 @@ public class BeatMapManager : Singleton<BeatMapManager>
         List<LogicNote> notesOnBeat = new List<LogicNote>();
         foreach (var note in activeLogicNotes)
         {
+            if (note.laneIndex != e.buttonIndex) continue; // Only consider notes in the lane where the button was pressed
+            
             // Check if the note is within the hit window, multiplied by BeatDuration to convert from beats to seconds
             ScoreType noteHitWindow = scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - CurrentBeatStamp) * BeatDuration);
             if (noteHitWindow != ScoreType.Miss)
@@ -139,7 +141,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
         Array allowedOps = beatMapData.allowedOperations;
         int currentIndex = Array.IndexOf(allowedOps, activeLogicOperation);
         int newIndex = currentIndex;
-        while (newIndex == currentIndex)
+        while (newIndex == currentIndex && allowedOps.Length > 1)
         {
             newIndex = UnityEngine.Random.Range(0, allowedOps.Length);
         }

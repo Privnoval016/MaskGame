@@ -15,9 +15,10 @@ public class LogicNote : MonoBehaviour, IPoolable
     float pauseDuration = 0.2f; // brief pause before returning to pool to account for hitting the note slightly early or late
     
     private bool active = false;
-    
-    public MeshRenderer noteRenderer;
-    public Material[] noteMaterials; // 0: False Material, 1: True Material
+
+    public MeshRenderer[] noteRenderers;
+    public Material[] zeroMaterials;
+    public Material[] oneMaterials;
 
     /**
      * <summary>
@@ -34,11 +35,19 @@ public class LogicNote : MonoBehaviour, IPoolable
         spawnLocationIndex = spawn;
         truthValue = noteParity;
 
-        // Set material based on truth value
-        if (noteMaterials != null && noteMaterials.Length >= 2 && noteRenderer != null)
+        // Set material based on truth value, assigning index 0 to meshrenderer index 0, etc.
+        for (int i = 0; i < noteRenderers.Length; i++)
         {
-            noteRenderer.material = truthValue == 1 ? noteMaterials[1] : noteMaterials[0];
+            if (truthValue == 0)
+            {
+                noteRenderers[i].material = zeroMaterials[i];
+            }
+            else
+            {
+                noteRenderers[i].material = oneMaterials[i];
+            }
         }
+        
         
         BeatMapManager.Instance.RegisterLogicNote(this);
         

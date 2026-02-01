@@ -92,7 +92,7 @@ Shader "Rhythm/RibbonGuide"
         Tags
         {
             "RenderType" = "Transparent"
-            "Queue" = "Transparent"
+            "Queue" = "Transparent-1"
             "IgnoreProjector" = "True"
             "PreviewType" = "Plane"
         }

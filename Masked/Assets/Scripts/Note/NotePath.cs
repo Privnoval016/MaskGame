@@ -11,8 +11,10 @@ public class NotePath : MonoBehaviour
 
     public int laneIndex;
     public int samplesPerSegment = 100; // higher = smoother curve, more accurate constant speed
+    public float zOffset = -2.1f; // how far backwards to offset the generated mesh along the Z axis
 
     private Vector3[] pathSamples; // sampled points along the path in world space
+    private Vector3[] meshPathSamples; // sampled points along the path in local space for mesh generation
     private float[] cumulativeDistances;
     private float totalPathLength;
 
@@ -21,6 +23,7 @@ public class NotePath : MonoBehaviour
         PrecomputePath();
     }
 
+    [Button("Precompute Path")]
     public void PrecomputePath()
     {
         if (waypoints.Length < 2) return;
@@ -90,6 +93,11 @@ public class NotePath : MonoBehaviour
         }
 
         pathSamples = samples.ToArray();
+        meshPathSamples = new Vector3[pathSamples.Length];
+        for (int i = 0; i < pathSamples.Length; i++)
+        {
+            meshPathSamples[i] = pathSamples[i] + new Vector3(0f, 0f, zOffset);
+        }
 
         // Compute cumulative arc-length distance along the path
         cumulativeDistances = new float[pathSamples.Length];
@@ -191,12 +199,12 @@ public class NotePath : MonoBehaviour
     [Button("Generate All Path Meshes")]
     public void GeneratePathBetweenWaypoints(float width, Vector3 up)
     {
-        if (pathSamples == null || pathSamples.Length == 0) PrecomputePath();
+        if (meshPathSamples == null || meshPathSamples.Length == 0) PrecomputePath();
 
         Mesh mesh = new Mesh();
         mesh.name = "PathRibbonMesh";
 
-        int segmentCount = pathSamples.Length - 1;
+        int segmentCount = meshPathSamples.Length - 1;
 
         var vertices = new List<Vector3>(segmentCount * 2);
         var triangles = new List<int>(segmentCount * 6);
@@ -207,7 +215,7 @@ public class NotePath : MonoBehaviour
         var segmentLengths = new float[segmentCount];
         for (int i = 0; i < segmentCount; i++)
         {
-            segmentLengths[i] = Vector3.Distance(pathSamples[i], pathSamples[i + 1]);
+            segmentLengths[i] = Vector3.Distance(meshPathSamples[i], meshPathSamples[i + 1]);
             totalLength += segmentLengths[i];
         }
 
@@ -218,16 +226,16 @@ public class NotePath : MonoBehaviour
 
         for (int i = 0; i <= segmentCount; i++)
         {
-            Vector3 point = transform.InverseTransformPoint(pathSamples[i]);
+            Vector3 point = transform.InverseTransformPoint(meshPathSamples[i]);
 
             // Compute the forward direction at this sample point
             Vector3 dir;
             if (i == 0)
-                dir = (transform.InverseTransformPoint(pathSamples[1]) - point).normalized;
+                dir = (transform.InverseTransformPoint(meshPathSamples[1]) - point).normalized;
             else if (i == segmentCount)
-                dir = (point - transform.InverseTransformPoint(pathSamples[i - 1])).normalized;
+                dir = (point - transform.InverseTransformPoint(meshPathSamples[i - 1])).normalized;
             else
-                dir = (transform.InverseTransformPoint(pathSamples[i + 1]) - transform.InverseTransformPoint(pathSamples[i - 1])).normalized;
+                dir = (transform.InverseTransformPoint(meshPathSamples[i + 1]) - transform.InverseTransformPoint(meshPathSamples[i - 1])).normalized;
 
             if (dir.sqrMagnitude < 0.0001f)
                 dir = Vector3.forward;
@@ -268,6 +276,8 @@ public class NotePath : MonoBehaviour
         mesh.SetUVs(0, uvs);
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
+        
+        //GetComponent<MeshRenderer>().material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent - 1; // 3000 - 1 = 2999
 
         GetComponent<MeshFilter>().sharedMesh = mesh;
         GetComponent<MeshRenderer>().enabled = true;

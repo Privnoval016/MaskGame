@@ -51,6 +51,15 @@ public class NotePathCollection : MonoBehaviour
             path.GeneratePathBetweenWaypoints(width, referenceNormal);
         }
     }
+    
+    [Button("Precompute Path")]
+    public void PrecomputePath()
+    {
+        foreach (var path in paths)
+        {
+            path.PrecomputePath();
+        }
+    }
 
 
 }
