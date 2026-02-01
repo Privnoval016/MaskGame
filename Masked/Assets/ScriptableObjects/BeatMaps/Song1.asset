@@ -15,6 +15,8 @@ MonoBehaviour:
   bpm: 172
   beats: 264
   clip: {fileID: 8300000, guid: 56bed3a63f6214ad9977d75593304286, type: 3}
+  beatLineRate: 1
+  superBeatLineRate: 4
   beatDataEntries:
   - beatStamp: 0
     laneIndex: 0
@@ -62,9 +64,9 @@ MonoBehaviour:
     laneIndex: 1
   - beatStamp: 45
     laneIndex: 2
-  - beatStamp: 48
-    laneIndex: 2
   - beatStamp: 47
+    laneIndex: 2
+  - beatStamp: 48
     laneIndex: 2
   - beatStamp: 52
     laneIndex: 0
@@ -118,9 +120,9 @@ MonoBehaviour:
     laneIndex: 0
   - beatStamp: 99
     laneIndex: 0
-  - beatStamp: 101
-    laneIndex: 1
   - beatStamp: 100
+    laneIndex: 1
+  - beatStamp: 101
     laneIndex: 1
   - beatStamp: 102
     laneIndex: 1
@@ -138,9 +140,9 @@ MonoBehaviour:
     laneIndex: 0
   - beatStamp: 109
     laneIndex: 0
-  - beatStamp: 111
-    laneIndex: 3
   - beatStamp: 110
+    laneIndex: 3
+  - beatStamp: 111
     laneIndex: 3
   - beatStamp: 112
     laneIndex: 0
@@ -186,9 +188,9 @@ MonoBehaviour:
     laneIndex: 0
   - beatStamp: 145
     laneIndex: 0
-  - beatStamp: 147
-    laneIndex: 0
   - beatStamp: 146
+    laneIndex: 0
+  - beatStamp: 147
     laneIndex: 0
   - beatStamp: 148
     laneIndex: 1
@@ -234,28 +236,258 @@ MonoBehaviour:
     laneIndex: 0
   - beatStamp: 204
     laneIndex: 1
-  - beatStamp: 208
-    laneIndex: 1
-  - beatStamp: 212
-    laneIndex: 1
-  - beatStamp: 191
-    laneIndex: 1
   - beatStamp: 209
     laneIndex: 2
-  - beatStamp: 210
-    laneIndex: 0
-  - beatStamp: 211
-    laneIndex: 2
+  - beatStamp: 212
+    laneIndex: 1
   - beatStamp: 212
     laneIndex: 3
   - beatStamp: 216
     laneIndex: 2
-  - beatStamp: 220
+  - beatStamp: 54
+    laneIndex: 2
+  - beatStamp: 13
+    laneIndex: 2
+  - beatStamp: 14
     laneIndex: 1
+  - beatStamp: 15
+    laneIndex: 0
+  - beatStamp: 49
+    laneIndex: 0
+  - beatStamp: 50
+    laneIndex: 3
+  - beatStamp: 70
+    laneIndex: 2
+  - beatStamp: 6
+    laneIndex: 3
+  - beatStamp: 7
+    laneIndex: 1
+  - beatStamp: 5
+    laneIndex: 2
+  - beatStamp: 18
+    laneIndex: 0
+  - beatStamp: 19
+    laneIndex: 2
+  - beatStamp: 22
+    laneIndex: 0
+  - beatStamp: 42
+    laneIndex: 3
+  - beatStamp: 58
+    laneIndex: 1
+  - beatStamp: 59
+    laneIndex: 3
+  - beatStamp: 59.5
+    laneIndex: 2
+  - beatStamp: 66
+    laneIndex: 2
+  - beatStamp: 70.5
+    laneIndex: 1
+  - beatStamp: 71
+    laneIndex: 0
+  - beatStamp: 71.5
+    laneIndex: 1
+  - beatStamp: 89
+    laneIndex: 3
+  - beatStamp: 90
+    laneIndex: 3
+  - beatStamp: 91
+    laneIndex: 3
+  - beatStamp: 129
+    laneIndex: 2
+  - beatStamp: 131
+    laneIndex: 1
+  - beatStamp: 132
+    laneIndex: 3
+  - beatStamp: 133
+    laneIndex: 2
+  - beatStamp: 161.5
+    laneIndex: 1
+  - beatStamp: 162.5
+    laneIndex: 2
+  - beatStamp: 163
+    laneIndex: 1
+  - beatStamp: 165.5
+    laneIndex: 1
+  - beatStamp: 166.5
+    laneIndex: 2
+  - beatStamp: 167
+    laneIndex: 1
+  - beatStamp: 169.5
+    laneIndex: 1
+  - beatStamp: 170.5
+    laneIndex: 2
+  - beatStamp: 171
+    laneIndex: 1
+  - beatStamp: 172
+    laneIndex: 3
+  - beatStamp: 173
+    laneIndex: 1
+  - beatStamp: 173
+    laneIndex: 2
+  - beatStamp: 174
+    laneIndex: 0
+  - beatStamp: 174
+    laneIndex: 1
+  - beatStamp: 175
+    laneIndex: 0
+  - beatStamp: 175
+    laneIndex: 3
+  - beatStamp: 177.5
+    laneIndex: 3
+  - beatStamp: 178.5
+    laneIndex: 0
+  - beatStamp: 179
+    laneIndex: 1
+  - beatStamp: 181.5
+    laneIndex: 3
+  - beatStamp: 182.5
+    laneIndex: 0
+  - beatStamp: 183
+    laneIndex: 1
+  - beatStamp: 189
+    laneIndex: 0
+  - beatStamp: 189.5
+    laneIndex: 1
+  - beatStamp: 190
+    laneIndex: 2
+  - beatStamp: 190.5
+    laneIndex: 3
+  - beatStamp: 191
+    laneIndex: 2
+  - beatStamp: 191.5
+    laneIndex: 1
+  - beatStamp: 192
+    laneIndex: 3
+  - beatStamp: 193.5
+    laneIndex: 1
+  - beatStamp: 194.5
+    laneIndex: 2
+  - beatStamp: 195
+    laneIndex: 3
+  - beatStamp: 197.5
+    laneIndex: 1
+  - beatStamp: 198.5
+    laneIndex: 2
+  - beatStamp: 199
+    laneIndex: 3
+  - beatStamp: 199.5
+    laneIndex: 2
+  - beatStamp: 201.5
+    laneIndex: 1
+  - beatStamp: 202.5
+    laneIndex: 2
+  - beatStamp: 203
+    laneIndex: 1
+  - beatStamp: 204
+    laneIndex: 2
+  - beatStamp: 205
+    laneIndex: 3
+  - beatStamp: 205
+    laneIndex: 0
+  - beatStamp: 206
+    laneIndex: 1
+  - beatStamp: 206
+    laneIndex: 2
+  - beatStamp: 207
+    laneIndex: 2
+  - beatStamp: 207
+    laneIndex: 1
+  - beatStamp: 208
+    laneIndex: 0
+  - beatStamp: 208
+    laneIndex: 3
+  - beatStamp: 210.5
+    laneIndex: 0
+  - beatStamp: 211
+    laneIndex: 1
+  - beatStamp: 213
+    laneIndex: 0
+  - beatStamp: 214.5
+    laneIndex: 2
+  - beatStamp: 215.5
+    laneIndex: 1
+  - beatStamp: 216
+    laneIndex: 1
+  - beatStamp: 217.5
+    laneIndex: 2
+  - beatStamp: 217.5
+    laneIndex: 1
+  - beatStamp: 218.5
+    laneIndex: 0
+  - beatStamp: 219
+    laneIndex: 1
+  - beatStamp: 219.5
+    laneIndex: 2
+  - beatStamp: 220
+    laneIndex: 3
+  - beatStamp: 220
+    laneIndex: 0
+  - beatStamp: 221
+    laneIndex: 2
+  - beatStamp: 221.5
+    laneIndex: 1
+  - beatStamp: 222
+    laneIndex: 3
+  - beatStamp: 222
+    laneIndex: 0
+  - beatStamp: 223
+    laneIndex: 0
+  - beatStamp: 223
+    laneIndex: 3
   - beatStamp: 224
     laneIndex: 0
-  - beatStamp: 224
+  - beatStamp: 225
+    laneIndex: 2
+  - beatStamp: 225.5
+    laneIndex: 1
+  - beatStamp: 228
+    laneIndex: 1
+  - beatStamp: 229
+    laneIndex: 2
+  - beatStamp: 230
     laneIndex: 3
+  - beatStamp: 231
+    laneIndex: 1
+  - beatStamp: 232
+    laneIndex: 2
+  - beatStamp: 234
+    laneIndex: 3
+  - beatStamp: 236
+    laneIndex: 3
+  - beatStamp: 237
+    laneIndex: 2
+  - beatStamp: 238
+    laneIndex: 1
+  - beatStamp: 239
+    laneIndex: 0
+  - beatStamp: 240
+    laneIndex: 0
+  - beatStamp: 240
+    laneIndex: 2
+  - beatStamp: 242
+    laneIndex: 0
+  - beatStamp: 243
+    laneIndex: 2
+  - beatStamp: 244
+    laneIndex: 1
+  - beatStamp: 244
+    laneIndex: 3
+  - beatStamp: 246
+    laneIndex: 0
+  - beatStamp: 248
+    laneIndex: 0
+  - beatStamp: 249
+    laneIndex: 1
+  - beatStamp: 250
+    laneIndex: 2
+  - beatStamp: 251
+    laneIndex: 3
+  - beatStamp: 32
+    laneIndex: 0
+  - beatStamp: 252
+    laneIndex: 2
+  - beatStamp: 252
+    laneIndex: 0
   checkpoints:
   - checkpointName: Checkpoint 2
     beatStamp: 32

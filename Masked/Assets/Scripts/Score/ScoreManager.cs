@@ -49,26 +49,42 @@ public class ScoreManager : MonoBehaviour
     
     private void OnNoteHit(LogicNoteHitEvent e)
     {
+        if (e.hitNote.spawnLocationIndex != 0) return; // only count hits from the first row to avoid double counting
+        
         ScoreType scoreType = e.scoreType;
         ScoreProfile profile = Array.Find(scoreProfiles, sp => sp.scoreType == scoreType);
 
+        if (e.isCorrect == true)
+        {
+            SoundEffectManager.Instance.Play(e.actualValue == 1 ? SoundEffectManager.Instance.soundEffectAtlas.correctHitOne : 
+                SoundEffectManager.Instance.soundEffectAtlas.correctHitZero);
+        }
+        else if (e.isCorrect == false)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.incorrectHit);
+        }
+        else
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.missHit);
+        }
+        
+        
         if (profile == null)
         {
             Debug.LogWarning("Score Profile not found");
             return;
         }
         
-        // update by half because each hit is for 2 notes
         if (e.isCorrect == true)
         {
-            totalScore += profile.correctScoreIncrease * 0.5f;
-            allCombo += 0.5f;
-            correctCombo += 0.5f;
+            totalScore += profile.correctScoreIncrease;
+            allCombo++;
+            correctCombo++;
         }
         else if (e.isCorrect == false)
         {
-            totalScore += profile.incorrectScoreIncrease * 0.5f;
-            allCombo += 0.5f;
+            totalScore += profile.incorrectScoreIncrease;
+            allCombo++;
             correctCombo = 0; // reset correct combo on incorrect hit
         }
         else

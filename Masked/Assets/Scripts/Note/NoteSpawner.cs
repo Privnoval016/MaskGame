@@ -45,7 +45,7 @@ public class NoteSpawner : MonoBehaviour
         }
         
         Action<Transform, Action> moveAction = path.GenerateNotePath(beatTravelTime);
-        note.MoveNote(beatStamp, laneIndex, parity, moveAction);
+        note.MoveNote(beatStamp, laneIndex, spawnLocationIndex, parity, moveAction);
         return note.gameObject;
     }
     

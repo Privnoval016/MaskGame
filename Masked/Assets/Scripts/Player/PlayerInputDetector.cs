@@ -30,9 +30,10 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
         Debug.Log(context.performed);
         if (context.performed)
         {
-            Debug.Log($"Tile1 pressed with context: {context}");
             Vector2 direction = context.ReadValue<Vector2>();
             EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(0, direction));
+            
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.buttonHit);
         }
     }
     
@@ -42,6 +43,8 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
         {
             Vector2 direction = context.ReadValue<Vector2>();
             EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(1, direction));
+            
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.buttonHit);
         }
     }
     
@@ -51,6 +54,8 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
         {
             Vector2 direction = context.ReadValue<Vector2>();
             EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(2, direction));
+            
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.buttonHit);
         }
     }
     
@@ -60,6 +65,8 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
         {
             Vector2 direction = context.ReadValue<Vector2>();
             EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(3, direction));
+            
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.buttonHit);
         }
     }
 

@@ -7,7 +7,8 @@ using UnityEngine;
 
 public class BeatMapManager : Singleton<BeatMapManager>
 {
-    public float SongTimer { get; private set; }
+    private float dspStartTime;
+    public float SongTimer => (float)(AudioSettings.dspTime - dspStartTime);
     
     [Header("Startup Settings")]
     public BeatMapData beatMapData;
@@ -23,7 +24,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
     
     public float CurrentBeatStamp => SongTimer / BeatDuration;
 
-    [SerializeField] private float beatStamp;
+    [SerializeField] private float beatStamp; // only for debugging in inspector
 
     [Header("Runtime Values")] public LogicOperation activeLogicOperation = LogicOperation.Or;
     
@@ -40,7 +41,8 @@ public class BeatMapManager : Singleton<BeatMapManager>
     {
         base.Awake(); 
         materialColorShifter = GetComponent<MaterialColorShifter>();
-        SongTimer = -startupDelay; // Start the song timer with a negative offset to account for startup delay
+        dspStartTime = (float)AudioSettings.dspTime + startupDelay; // set the dsp start time to be startupDelay seconds in the future
+        musicManager.PlayMusic(beatMapData.clip, dspStartTime);
         
         buttonPressedBinding = new EventBinding<ButtonPressedEvent>(OnButtonPressed);
         EventBus<ButtonPressedEvent>.Register(buttonPressedBinding);
@@ -61,11 +63,9 @@ public class BeatMapManager : Singleton<BeatMapManager>
     private void Update()
     {
         beatStamp = CurrentBeatStamp;
-        SongTimer += Time.deltaTime;
         
         if (!musicBegan && SongTimer >= 0f)
         {
-            musicManager.PlayMusic(beatMapData.clip);
             musicBegan = true;
         }
     }
@@ -76,7 +76,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
         foreach (var note in activeLogicNotes)
         {
             // Check if the note is within the hit window, multiplied by BeatDuration to convert from beats to seconds
-            ScoreType noteHitWindow = scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - beatStamp) * BeatDuration);
+            ScoreType noteHitWindow = scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - CurrentBeatStamp) * BeatDuration);
             if (noteHitWindow != ScoreType.Miss)
             {
                 notesOnBeat.Add(note);
@@ -100,7 +100,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
             // Correct input
             foreach (var note in notesOnBeat)
             {
-                note.ReturnToPool(true, scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - beatStamp) * BeatDuration));
+                note.ReturnToPool(true, scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - CurrentBeatStamp) * BeatDuration), expectedTruthValue);
             }
         }
         else
@@ -109,7 +109,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
             // Incorrect input
             foreach (var note in notesOnBeat)
             {                
-                note.ReturnToPool(false, scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - beatStamp) * BeatDuration));
+                note.ReturnToPool(false, scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - CurrentBeatStamp) * BeatDuration), expectedTruthValue);
             }
         }
         
@@ -148,7 +148,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
         
         materialColorShifter.ShiftColors(activeLogicOperation);
         
-        SoundEffectManager.Instance.PlaySoundEffect(SoundEffectManager.Instance.operationChange);
+        SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.operationChange);
         
         // Fire an event to notify other systems of the checkpoint reached and logic operation change
         EventBus<CheckpointReachedEvent>.Raise(new CheckpointReachedEvent(checkpoint, previousOperation, activeLogicOperation));
@@ -195,11 +195,13 @@ public struct LogicNoteHitEvent : IEvent
     public readonly LogicNote hitNote;
     public readonly bool? isCorrect;
     public readonly ScoreType scoreType;
+    public int actualValue;
 
-    public LogicNoteHitEvent(LogicNote hitNote, bool? isCorrect, ScoreType scoreType)
+    public LogicNoteHitEvent(LogicNote hitNote, bool? isCorrect, ScoreType scoreType, int actualValue)
     {
         this.hitNote = hitNote;
         this.isCorrect = isCorrect;
         this.scoreType = scoreType;
+        this.actualValue = actualValue;
     }
 }

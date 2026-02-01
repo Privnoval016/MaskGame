@@ -12,7 +12,7 @@ public class MusicManager : MonoBehaviour
         }
     }
     
-    public void PlayMusic(AudioClip clip, bool loop = false)
+    public void PlayMusic(AudioClip clip, double time, bool loop = false)
     {
         if (audioSource == null || clip == null) return;
         
@@ -21,6 +21,6 @@ public class MusicManager : MonoBehaviour
         audioSource.clip = clip;
         audioSource.loop = loop;
         audioSource.volume = 1f;
-        audioSource.Play();
+        audioSource.PlayScheduled(time);
     }
 }
