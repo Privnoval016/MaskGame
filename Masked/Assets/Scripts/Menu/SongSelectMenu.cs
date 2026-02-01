@@ -532,7 +532,7 @@ public class SongSelectMenu : MonoBehaviour
     {
         if (playSpeedText != null)
         {
-            playSpeedText.text = $"Speed: {currentPlaySpeed:F1}x";
+            playSpeedText.text = $"{currentPlaySpeed:F1}x";
         }
     }
     
