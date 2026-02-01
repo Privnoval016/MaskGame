@@ -231,12 +231,36 @@ public class SongSelectMenu : MonoBehaviour
         UpdatePlaySpeedDisplay();
         
         // Setup operation toggles - default all enabled
-        if (andToggle != null) andToggle.isOn = true;
-        if (orToggle != null) orToggle.isOn = true;
-        if (xorToggle != null) xorToggle.isOn = true;
-        if (nandToggle != null) nandToggle.isOn = true;
-        if (norToggle != null) norToggle.isOn = true;
-        if (xnorToggle != null) xnorToggle.isOn = true;
+        if (andToggle != null)
+        {
+            andToggle.isOn = true;
+            andToggle.onValueChanged.AddListener((value) => OnOperationToggleChanged(andToggle));
+        }
+        if (orToggle != null)
+        {
+            orToggle.isOn = true;
+            orToggle.onValueChanged.AddListener((value) => OnOperationToggleChanged(orToggle));
+        }
+        if (xorToggle != null)
+        {
+            xorToggle.isOn = true;
+            xorToggle.onValueChanged.AddListener((value) => OnOperationToggleChanged(xorToggle));
+        }
+        if (nandToggle != null)
+        {
+            nandToggle.isOn = true;
+            nandToggle.onValueChanged.AddListener((value) => OnOperationToggleChanged(nandToggle));
+        }
+        if (norToggle != null)
+        {
+            norToggle.isOn = true;
+            norToggle.onValueChanged.AddListener((value) => OnOperationToggleChanged(norToggle));
+        }
+        if (xnorToggle != null)
+        {
+            xnorToggle.isOn = true;
+            xnorToggle.onValueChanged.AddListener((value) => OnOperationToggleChanged(xnorToggle));
+        }
     }
     
     private void Update()
@@ -482,12 +506,24 @@ public class SongSelectMenu : MonoBehaviour
     
     private void OnPlaySpeedMinus()
     {
+        // Play UI select sound
+        if (SoundEffectManager.Instance != null)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.uiSelect);
+        }
+        
         currentPlaySpeed = Mathf.Max(1f, currentPlaySpeed - 0.5f);
         UpdatePlaySpeedDisplay();
     }
     
     private void OnPlaySpeedPlus()
     {
+        // Play UI select sound
+        if (SoundEffectManager.Instance != null)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.uiSelect);
+        }
+        
         currentPlaySpeed = Mathf.Min(10f, currentPlaySpeed + 0.5f);
         UpdatePlaySpeedDisplay();
     }
@@ -496,7 +532,29 @@ public class SongSelectMenu : MonoBehaviour
     {
         if (playSpeedText != null)
         {
-            playSpeedText.text = $"{currentPlaySpeed:F1}x";
+            playSpeedText.text = $"Speed: {currentPlaySpeed:F1}x";
+        }
+    }
+    
+    /// <summary>
+    /// Validates that at least one operation is always selected
+    /// </summary>
+    private void OnOperationToggleChanged(Toggle changedToggle)
+    {
+        // Count how many toggles are currently on
+        int enabledCount = 0;
+        if (andToggle != null && andToggle.isOn) enabledCount++;
+        if (orToggle != null && orToggle.isOn) enabledCount++;
+        if (xorToggle != null && xorToggle.isOn) enabledCount++;
+        if (nandToggle != null && nandToggle.isOn) enabledCount++;
+        if (norToggle != null && norToggle.isOn) enabledCount++;
+        if (xnorToggle != null && xnorToggle.isOn) enabledCount++;
+        
+        // If user tried to turn off the last operation, force it back on
+        if (enabledCount == 0)
+        {
+            changedToggle.isOn = true;
+            Debug.Log("At least one operation must be selected!");
         }
     }
     
@@ -511,18 +569,19 @@ public class SongSelectMenu : MonoBehaviour
         if (norToggle != null && norToggle.isOn) enabled.Add(LogicOperation.Nor);
         if (xnorToggle != null && xnorToggle.isOn) enabled.Add(LogicOperation.Xnor);
         
-        // Ensure at least one operation is enabled
-        if (enabled.Count == 0)
-        {
-            enabled.Add(LogicOperation.And); // Default fallback
-        }
-        
+        // This should never be 0 due to OnOperationToggleChanged validation
         return enabled.ToArray();
     }
     
     private void OnPlayClicked()
     {
         if (selectedCard == null) return;
+        
+        // Play song begin sound
+        if (SoundEffectManager.Instance != null)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.songBegin);
+        }
         
         // Get settings
         LogicOperation[] enabledOps = GetEnabledOperations();
@@ -556,6 +615,12 @@ public class SongSelectMenu : MonoBehaviour
     public void OnBackPressed()
     {
         if (!isSelected) return;
+        
+        // Play UI select sound
+        if (SoundEffectManager.Instance != null)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.uiSelect);
+        }
         
         isSelected = false;
         

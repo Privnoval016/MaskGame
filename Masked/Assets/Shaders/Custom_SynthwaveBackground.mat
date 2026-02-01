@@ -25,7 +25,7 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _ColorMix: 0.3
+    - _ColorMix: 0
     - _GridBrightness: 0.35
     - _GridDensity: 8
     - _GridEnabled: 1

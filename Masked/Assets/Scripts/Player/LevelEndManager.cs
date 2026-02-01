@@ -195,6 +195,12 @@ public class LevelEndManager : Singleton<LevelEndManager>
     {
         Debug.Log("Return to Menu button clicked!");
         
+        // Play UI select sound
+        if (SoundEffectManager.Instance != null)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.uiSelect);
+        }
+        
         // Stop all tweens including number counters
         Tween.StopAll();
         

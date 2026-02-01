@@ -57,6 +57,12 @@ public class SongCard : MonoBehaviour
     {
         if (songSelectMenu == null) return;
         
+        // Play UI select sound
+        if (SoundEffectManager.Instance != null)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.uiSelect);
+        }
+        
         // Get the index of this card
         int cardIndex = songSelectMenu.GetCardIndex(this);
         

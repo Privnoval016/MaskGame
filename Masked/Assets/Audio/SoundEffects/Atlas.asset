@@ -17,7 +17,8 @@ MonoBehaviour:
   correctHitZero: {fileID: 11400000, guid: 48f72b0270bc946e6af124079005bc54, type: 2}
   incorrectHit: {fileID: 11400000, guid: e068cdcd0437440e0ab36700590015a2, type: 2}
   missHit: {fileID: 11400000, guid: aa80201ee22fd4453b6a95986f044210, type: 2}
-  comboBreak: {fileID: 0}
-  levelUp: {fileID: 0}
+  finishedSong: {fileID: 11400000, guid: 4d81252f6767e45469e166c4a160a938, type: 2}
   gameOver: {fileID: 11400000, guid: d034c8518e54e47518f759360bfdae5a, type: 2}
   operationChange: {fileID: 11400000, guid: aec317088e58b4261984dcb3c949734c, type: 2}
+  uiSelect: {fileID: 11400000, guid: 967d9232880724e6b947897091965ea5, type: 2}
+  songBegin: {fileID: 11400000, guid: b576282b5f02247818b96767e3ef56c9, type: 2}

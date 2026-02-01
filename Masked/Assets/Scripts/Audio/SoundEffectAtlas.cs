@@ -14,8 +14,12 @@ public class SoundEffectAtlas : ScriptableObject
     public SoundEffect missHit;
     
     [Header("Other Sounds")]
-    public SoundEffect comboBreak;
-    public SoundEffect levelUp;
+    public SoundEffect finishedSong;
     public SoundEffect gameOver;
     public SoundEffect operationChange;
+    
+    [Header("UI Sounds")]
+    public SoundEffect uiSelect;
+
+    public SoundEffect songBegin;
 }

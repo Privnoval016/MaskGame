@@ -137,7 +137,8 @@ public class MaterialColorShifter : MonoBehaviour
         Sequence.Create()
             .Group(Tween.MaterialProperty(scrollingMaterial, neonColorID, info.mediumHdrColor, shiftDuration))
             .Group(Tween.MaterialProperty(scrollingMaterial, haloColorID, info.haloColor, shiftDuration));
-        
+
+        if (backgroundMaterial == null) return;
         int colorID = Shader.PropertyToID("_Color");
         Tween.MaterialProperty(backgroundMaterial, colorID, info.baseColor, shiftDuration);
     }

@@ -129,6 +129,12 @@ public class GameManager : Singleton<GameManager>
         isLevelCompleteActive = true;
         Debug.Log($"GameManager.LevelComplete called! Score: {totalScore}, Max Combo: {maxCombo}, Max Correct Combo: {maxCorrectCombo}");
         
+        // Play finished song sound effect
+        if (SoundEffectManager.Instance != null)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.finishedSong);
+        }
+        
         LevelEndManager levelEndManager = LevelEndManager.Instance;
         
         if (levelEndManager != null)

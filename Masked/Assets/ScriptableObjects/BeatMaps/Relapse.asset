@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   songTitle: Relapse
   author: Privnoval016
-  coverArt: {fileID: 0}
+  coverArt: {fileID: 21300000, guid: ff2724ef563e04f85873ec1e82c6ca01, type: 3}
   bpm: 172
   beats: 252
   clip: {fileID: 8300000, guid: 56bed3a63f6214ad9977d75593304286, type: 3}

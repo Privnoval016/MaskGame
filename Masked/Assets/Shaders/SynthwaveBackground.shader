@@ -37,18 +37,17 @@ Shader "Custom/SynthwaveBackground"
 
     SubShader
     {
-        // Queue=Background renders before Geometry (1000). ZWrite On still writes
-        // depth, but Background queue = 100, so it draws first. We then force
-        // the fragment shader to output depth = 1.0 (farthest), so every opaque
-        // or transparent object in front will pass the depth test.
-        Tags { "RenderType"="Opaque" "Queue"="Background" "RenderPipeline"="UniversalPipeline" }
+        // Use Transparent queue with offset to render before RibbonGuide (Transparent-1=2999)
+        // Transparent-100 = 2900, so this renders first, then RibbonGuide, then other transparent
+        Tags { "RenderType"="Transparent" "Queue"="Transparent-100" "RenderPipeline"="UniversalPipeline" }
         LOD 100
 
         Pass
         {
             Cull Off
-            ZWrite On
-            ZTest Always  // always write; we're the background
+            ZWrite Off  // Transparent shaders don't write depth
+            ZTest LEqual  // Standard depth test
+            Blend SrcAlpha OneMinusSrcAlpha  // Standard alpha blending
 
             HLSLPROGRAM
             #pragma vertex vert
@@ -181,16 +180,8 @@ Shader "Custom/SynthwaveBackground"
                 return output;
             }
 
-            // ── Fragment ────────────────────────────────────────────────
-            // We output both color AND depth. Depth is forced to 1.0 so this
-            // fragment is always "behind" everything else.
-            struct FragOutput
-            {
-                half4 col : SV_Target;
-                float dep : SV_Depth;
-            };
-
-            FragOutput frag(Varyings input)
+            // ── Fragment ────────────────────────────────────────────
+            half4 frag(Varyings input) : SV_Target
             {
                 float2 uv = input.uv;
                 float time = _Time.y * _Speed;
@@ -349,10 +340,7 @@ Shader "Custom/SynthwaveBackground"
                     }
                 }
 
-                FragOutput result;
-                result.col = half4(finalColor, 1.0);
-                result.dep = 1.0; // farthest possible — everything renders in front of us
-                return result;
+                return half4(finalColor, 1.0);
             }
             ENDHLSL
         }
