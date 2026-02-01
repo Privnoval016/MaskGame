@@ -102,7 +102,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
             // Correct input
             foreach (var note in notesOnBeat)
             {
-                note.ReturnToPool(true, scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - CurrentBeatStamp) * BeatDuration), expectedTruthValue);
+                note.ReturnToPool(true, scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - CurrentBeatStamp) * BeatDuration));
             }
         }
         else
@@ -111,7 +111,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
             // Incorrect input
             foreach (var note in notesOnBeat)
             {                
-                note.ReturnToPool(false, scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - CurrentBeatStamp) * BeatDuration), expectedTruthValue);
+                note.ReturnToPool(false, scoreManager.GetScoreTypeByHitDelta(Mathf.Abs(note.beatStamp - CurrentBeatStamp) * BeatDuration));
             }
         }
         

@@ -13,11 +13,11 @@ public class AndSplitter : LogicSplitter
     {
         if (truthValue == 1)
         {
-            // For AND operation, if the truth value is 1, spawn notes in all lanes
+            // For AND operation, if the truth value is 1, we need to spawn notes in all lanes
             int[] allLanes = new int[numberOfSpawnLocations];
             for (int i = 0; i < numberOfSpawnLocations; i++)
             {
-                allLanes[i] = i;
+                allLanes[i] = 1;
             }
             return allLanes;
         }

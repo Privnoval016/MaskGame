@@ -137,18 +137,19 @@ public class BeatMapEditorWindow : EditorWindow
     
     private void DrawControlPanel()
     {
-        EditorGUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(120));
+        float panelHeight = selectedNotes.Count > 0 ? 150f : 120f;
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(panelHeight));
         
         // Playback controls
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Playback", EditorStyles.boldLabel, GUILayout.Width(80));
         
-        if (GUILayout.Button(isPlaying ? "⏸ Pause" : "▶ Play", GUILayout.Width(80)))
+        if (GUILayout.Button(isPlaying ? "Pause" : "Play", GUILayout.Width(80)))
         {
             TogglePlayback();
         }
         
-        if (GUILayout.Button("⏹ Stop", GUILayout.Width(60)))
+        if (GUILayout.Button("Stop", GUILayout.Width(60)))
         {
             StopPlayback();
         }
@@ -157,10 +158,19 @@ public class BeatMapEditorWindow : EditorWindow
         
         EditorGUILayout.LabelField("Beat:", GUILayout.Width(40));
         float newBeat = EditorGUILayout.FloatField(currentBeat, GUILayout.Width(60));
-        if (newBeat != currentBeat)
+        if (Mathf.Abs(newBeat - currentBeat) > 0.01f)
         {
             currentBeat = Mathf.Max(0, newBeat);
-            if (isPlaying) StopPlayback();
+            if (isPlaying)
+            {
+                StopPlayback();
+                // Update audio position when manually changing beat
+                if (previewAudioSource != null && beatMapData != null && beatMapData.clip != null)
+                {
+                    float secondsPerBeat = 60f / beatMapData.bpm;
+                    previewAudioSource.time = Mathf.Clamp(currentBeat * secondsPerBeat, 0f, beatMapData.clip.length);
+                }
+            }
         }
         
         EditorGUILayout.EndHorizontal();
@@ -170,10 +180,16 @@ public class BeatMapEditorWindow : EditorWindow
         EditorGUILayout.LabelField("", GUILayout.Width(80)); // Spacer
         float maxBeat = beatMapData.beats > 0 ? beatMapData.beats : 100f;
         float scrubberBeat = GUILayout.HorizontalSlider(currentBeat, 0, maxBeat);
-        if (scrubberBeat != currentBeat)
+        if (Mathf.Abs(scrubberBeat - currentBeat) > 0.01f)
         {
             currentBeat = scrubberBeat;
-            if (isPlaying) StopPlayback();
+            // Update audio position when scrubbing during playback
+            if (isPlaying && previewAudioSource != null && beatMapData != null && beatMapData.clip != null)
+            {
+                float secondsPerBeat = 60f / beatMapData.bpm;
+                previewAudioSource.time = Mathf.Clamp(currentBeat * secondsPerBeat, 0f, beatMapData.clip.length);
+                playbackStartBeat = currentBeat;
+            }
         }
         EditorGUILayout.EndHorizontal();
         
@@ -202,12 +218,52 @@ public class BeatMapEditorWindow : EditorWindow
         
         EditorGUILayout.Space(5);
         
+        // Truth value editing - only show when notes are selected
+        if (selectedNotes.Count > 0)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField($"Selected: {selectedNotes.Count}", EditorStyles.boldLabel, GUILayout.Width(80));
+            
+            EditorGUILayout.LabelField("Set Truth:", GUILayout.Width(70));
+            
+            if (GUILayout.Button("False (0)", GUILayout.Width(80)))
+            {
+                SetSelectedNotesTruthValue(TruthValue.False);
+            }
+            
+            if (GUILayout.Button("True (1)", GUILayout.Width(80)))
+            {
+                SetSelectedNotesTruthValue(TruthValue.True);
+            }
+            
+            if (GUILayout.Button("Random", GUILayout.Width(80)))
+            {
+                SetSelectedNotesTruthValue(TruthValue.Random);
+            }
+            
+            EditorGUILayout.EndHorizontal();
+        }
+        
         // Stats
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField($"BPM: {beatMapData.bpm} | Total Beats: {beatMapData.beats} | Notes: {(beatMapData.beatDataEntries?.Length ?? 0)}", EditorStyles.miniLabel);
         EditorGUILayout.EndHorizontal();
         
         EditorGUILayout.EndVertical();
+    }
+    
+    private void SetSelectedNotesTruthValue(TruthValue value)
+    {
+        foreach (int index in selectedNotes)
+        {
+            if (index >= 0 && index < beatMapData.beatDataEntries.Length)
+            {
+                beatMapData.beatDataEntries[index].truthValue = value;
+            }
+        }
+        
+        EditorUtility.SetDirty(beatMapData);
+        Repaint();
     }
     
     private void DrawBeatMapGrid()
@@ -359,8 +415,29 @@ public class BeatMapEditorWindow : EditorWindow
             float x = gridRect.x + timelineWidth + entry.laneIndex * cellWidth;
             float y = gridRect.y + row * (cellHeight + 2) + (beatProgress * cellHeight);
             
-            // Draw note
-            Color noteColor = selectedNotes.Contains(i) ? new Color(1f, 0.8f, 0.2f) : new Color(0.3f, 0.8f, 1f);
+            // Color-code notes by truth value
+            Color noteColor;
+            if (selectedNotes.Contains(i))
+            {
+                noteColor = new Color(1f, 0.8f, 0.2f); // Yellow for selected
+            }
+            else
+            {
+                switch (entry.truthValue)
+                {
+                    case TruthValue.False:
+                        noteColor = new Color(1f, 0.3f, 0.3f); // Red for False (0)
+                        break;
+                    case TruthValue.True:
+                        noteColor = new Color(0.3f, 1f, 0.3f); // Green for True (1)
+                        break;
+                    case TruthValue.Random:
+                    default:
+                        noteColor = new Color(0.3f, 0.8f, 1f); // Blue for Random
+                        break;
+                }
+            }
+            
             EditorGUI.DrawRect(new Rect(x + 2, y - 3, cellWidth - 4, 6), noteColor);
             
             // Draw note border
@@ -372,13 +449,13 @@ public class BeatMapEditorWindow : EditorWindow
     private void DrawPlaybackLine(Rect gridRect, float cellHeight)
     {
         if (currentBeat < 0) return;
-        
+
         int row = Mathf.FloorToInt(currentBeat / beatsPerRow);
         float beatInRow = currentBeat - (row * beatsPerRow);
         float beatProgress = beatInRow / beatsPerRow;
-        
+
         float y = gridRect.y + row * (cellHeight + 2) + (beatProgress * cellHeight);
-        
+
         // Only draw if the playback line is visible in the grid
         if (y >= gridRect.y && y <= gridRect.y + gridRect.height)
         {
@@ -388,7 +465,7 @@ public class BeatMapEditorWindow : EditorWindow
                 new Vector3(gridRect.x + timelineWidth, y, 0),
                 new Vector3(gridRect.x + gridRect.width, y, 0)
             );
-            
+
             // Draw a thicker line for better visibility
             Handles.DrawLine(
                 new Vector3(gridRect.x + timelineWidth, y + 1, 0),
@@ -397,32 +474,32 @@ public class BeatMapEditorWindow : EditorWindow
             Handles.EndGUI();
         }
     }
-    
+
     private void HandleGridInput(Rect gridRect, float cellHeight, float cellWidth)
     {
         Event e = Event.current;
         Vector2 mousePos = e.mousePosition;
-        
+
         if (!gridRect.Contains(mousePos)) return;
-        
+
         // Calculate grid position
         float relativeX = mousePos.x - gridRect.x - timelineWidth;
         float relativeY = mousePos.y - gridRect.y;
-        
+
         if (relativeX < 0) return; // Click in timeline area
-        
+
         int lane = Mathf.FloorToInt(relativeX / cellWidth);
         int row = Mathf.FloorToInt(relativeY / (cellHeight + 2));
         float yInRow = relativeY - (row * (cellHeight + 2));
         float beatInRow = (yInRow / cellHeight) * beatsPerRow;
         float beat = row * beatsPerRow + beatInRow;
-        
+
         // Snap to grid
         float snapValue = snapValues[currentSnapIndex];
         beat = Mathf.Round(beat / snapValue) * snapValue;
-        
+
         if (lane < 0 || lane >= numLanes) return;
-        
+
         if (e.type == EventType.MouseDown && e.button == 0)
         {
             if (currentTool == ToolMode.Place)
@@ -441,13 +518,13 @@ public class BeatMapEditorWindow : EditorWindow
                 e.Use();
             }
         }
-        
+
         if (e.type == EventType.MouseDrag && currentTool == ToolMode.Erase)
         {
             EraseNoteAt(beat, lane);
             e.Use();
         }
-        
+
         if (e.type == EventType.KeyDown)
         {
             if (e.keyCode == KeyCode.Delete || e.keyCode == KeyCode.Backspace)
@@ -455,9 +532,33 @@ public class BeatMapEditorWindow : EditorWindow
                 DeleteSelectedNotes();
                 e.Use();
             }
+            else if (e.keyCode == KeyCode.Alpha0 || e.keyCode == KeyCode.Keypad0)
+            {
+                if (selectedNotes.Count > 0)
+                {
+                    SetSelectedNotesTruthValue(TruthValue.False);
+                    e.Use();
+                }
+            }
+            else if (e.keyCode == KeyCode.Alpha1 || e.keyCode == KeyCode.Keypad1)
+            {
+                if (selectedNotes.Count > 0)
+                {
+                    SetSelectedNotesTruthValue(TruthValue.True);
+                    e.Use();
+                }
+            }
+            else if (e.keyCode == KeyCode.R)
+            {
+                if (selectedNotes.Count > 0)
+                {
+                    SetSelectedNotesTruthValue(TruthValue.Random);
+                    e.Use();
+                }
+            }
         }
     }
-    
+
     private void PlaceNote(float beat, int lane)
     {
         // Check if note already exists at this position
@@ -470,29 +571,29 @@ public class BeatMapEditorWindow : EditorWindow
                 break;
             }
         }
-        
+
         if (!exists)
         {
             var newEntry = new BeatDataEntry { beatStamp = beat, laneIndex = lane };
             var list = beatMapData.beatDataEntries.ToList();
             list.Add(newEntry);
             beatMapData.beatDataEntries = list.ToArray();
-            
+
             EditorUtility.SetDirty(beatMapData);
             Repaint();
         }
     }
-    
+
     private void EraseNoteAt(float beat, int lane)
     {
         var list = beatMapData.beatDataEntries.ToList();
         float snapTolerance = snapValues[currentSnapIndex] * 0.5f;
-        
-        list.RemoveAll(entry => 
-            Mathf.Abs(entry.beatStamp - beat) < snapTolerance && 
+
+        list.RemoveAll(entry =>
+            Mathf.Abs(entry.beatStamp - beat) < snapTolerance &&
             entry.laneIndex == lane
         );
-        
+
         if (list.Count != beatMapData.beatDataEntries.Length)
         {
             beatMapData.beatDataEntries = list.ToArray();
@@ -500,16 +601,16 @@ public class BeatMapEditorWindow : EditorWindow
             Repaint();
         }
     }
-    
+
     private void SelectNoteAt(float beat, int lane, bool addToSelection)
     {
         if (!addToSelection)
         {
             selectedNotes.Clear();
         }
-        
+
         float snapTolerance = snapValues[currentSnapIndex] * 0.5f;
-        
+
         for (int i = 0; i < beatMapData.beatDataEntries.Length; i++)
         {
             var entry = beatMapData.beatDataEntries[i];
@@ -526,17 +627,17 @@ public class BeatMapEditorWindow : EditorWindow
                 break;
             }
         }
-        
+
         Repaint();
     }
-    
+
     private void DeleteSelectedNotes()
     {
         if (selectedNotes.Count == 0) return;
-        
+
         var list = beatMapData.beatDataEntries.ToList();
         var indicesToRemove = selectedNotes.OrderByDescending(i => i).ToList();
-        
+
         foreach (int index in indicesToRemove)
         {
             if (index >= 0 && index < list.Count)
@@ -544,14 +645,14 @@ public class BeatMapEditorWindow : EditorWindow
                 list.RemoveAt(index);
             }
         }
-        
+
         beatMapData.beatDataEntries = list.ToArray();
         selectedNotes.Clear();
-        
+
         EditorUtility.SetDirty(beatMapData);
         Repaint();
     }
-    
+
     private void TogglePlayback()
     {
         if (beatMapData.clip == null)
@@ -559,7 +660,7 @@ public class BeatMapEditorWindow : EditorWindow
             Debug.LogWarning("No audio clip assigned to BeatMap!");
             return;
         }
-        
+
         if (!isPlaying)
         {
             // Start playback
@@ -567,7 +668,7 @@ public class BeatMapEditorWindow : EditorWindow
             float secondsPerBeat = 60f / beatMapData.bpm;
             previewAudioSource.time = currentBeat * secondsPerBeat;
             previewAudioSource.Play();
-            
+
             playbackStartBeat = currentBeat;
             isPlaying = true;
         }
@@ -578,7 +679,7 @@ public class BeatMapEditorWindow : EditorWindow
             isPlaying = false;
         }
     }
-    
+
     private void StopPlayback()
     {
         if (previewAudioSource != null && previewAudioSource.isPlaying)
@@ -589,13 +690,13 @@ public class BeatMapEditorWindow : EditorWindow
         currentBeat = 0f;
         Repaint();
     }
-    
+
     private void OnBeatMapChanged()
     {
         StopPlayback();
         currentBeat = 0f;
         selectedNotes.Clear();
-        
+
         if (beatMapData != null)
         {
             // Auto-detect number of lanes
@@ -606,7 +707,7 @@ public class BeatMapEditorWindow : EditorWindow
             }
         }
     }
-    
+
     private void SaveBeatMap()
     {
         if (beatMapData != null)
@@ -616,7 +717,7 @@ public class BeatMapEditorWindow : EditorWindow
             Debug.Log($"BeatMap '{beatMapData.name}' saved!");
         }
     }
-    
+
     private void CreateNewBeatMap()
     {
         string path = EditorUtility.SaveFilePanelInProject(
@@ -625,20 +726,21 @@ public class BeatMapEditorWindow : EditorWindow
             "asset",
             "Choose a location for the new BeatMap"
         );
-        
+
         if (!string.IsNullOrEmpty(path))
         {
             BeatMapData newBeatMap = CreateInstance<BeatMapData>();
             newBeatMap.bpm = 120;
             newBeatMap.beats = 100;
             newBeatMap.beatDataEntries = new BeatDataEntry[0];
-            
+
             AssetDatabase.CreateAsset(newBeatMap, path);
             AssetDatabase.SaveAssets();
-            
+
             beatMapData = newBeatMap;
             OnBeatMapChanged();
         }
     }
 }
+
 

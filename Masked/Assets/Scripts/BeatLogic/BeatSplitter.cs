@@ -13,11 +13,20 @@ public class BeatSplitter : MonoBehaviour
     public NoteSpawner noteSpawner;
     
     [Header("Spawn Settings")]
-    public float playSpeed = 10f; // Speed at which notes travel toward the player, used to calculate timing of when to spawn notes such that they arrive on beat
+    [Tooltip("Note speed - Higher = faster notes (more difficult), Lower = slower notes (easier). Range: 1-10")]
+    [Range(1f, 10f)]
+    public float playSpeed = 5f; // Speed at which notes travel
     
-    public int distanceFromSpawnToHitPoint = 20; // Distance from spawn point to hit point, used to calculate when to spawn notes
+    [Tooltip("Base travel time in beats at speed 5. Used to calculate actual travel time based on playSpeed")]
+    public float baseTravelTimeInBeats = 2f; // At playSpeed = 5, notes take 2 beats to travel
     
-    public float BeatSpawnOffset => distanceFromSpawnToHitPoint / playSpeed; // Time offset to spawn notes early so they reach the hit point on time.
+    // Calculate travel time inversely proportional to playSpeed
+    // Higher playSpeed = shorter travel time = faster notes
+    private float TravelTimeInBeats => baseTravelTimeInBeats * (5f / playSpeed);
+    
+    public float BeatSpawnOffset => TravelTimeInBeats; // Spawn notes this many beats early so they reach the hit point on time
+    
+    public float TravelTimeInSeconds => TravelTimeInBeats * BeatMapManager.Instance.BeatDuration; // Actual travel time in seconds
     
     public Queue<BeatDataEntry> BeatQueue { get; } = new();
     public Queue<BeatMapCheckpoint> CheckpointQueue { get; } = new();
@@ -30,6 +39,46 @@ public class BeatSplitter : MonoBehaviour
     private void Awake()
     {
         InitializeBeatMap();
+    }
+
+    private void Start()
+    {
+        // Pre-spawn notes that should be visible at the start
+        // We need to spawn any notes that fall within the initial spawn window
+        SpawnInitialNotes();
+    }
+
+    private void SpawnInitialNotes()
+    {
+        // At song start (SongTimer = 0), we need to spawn notes up to BeatSpawnOffset beats
+        float initialSpawnBeat = TravelTimeInBeats;
+        
+        // Create a temporary list to hold notes we need to spawn initially
+        List<BeatDataEntry> initialNotes = new List<BeatDataEntry>();
+        
+        // Check which notes from the queue should be pre-spawned
+        while (BeatQueue.Count > 0 && BeatQueue.Peek().beatStamp <= initialSpawnBeat)
+        {
+            initialNotes.Add(BeatQueue.Dequeue());
+        }
+        
+        // Spawn all initial notes
+        foreach (var beatEntry in initialNotes)
+        {
+            // Determine truth value based on the entry's setting
+            int truthValue;
+            if (beatEntry.truthValue == TruthValue.Random)
+            {
+                truthValue = Random.Range(0, 2);
+            }
+            else
+            {
+                truthValue = (int)beatEntry.truthValue;
+            }
+            
+            int[] noteSpawnIndicesForBeat = GetNoteSpawnIndicesForBeat(truthValue);
+            SpawnNotesAtBeat(beatEntry.beatStamp, noteSpawnIndicesForBeat, beatEntry.laneIndex, truthValue);
+        }
     }
 
     private void Update()
@@ -79,41 +128,51 @@ public class BeatSplitter : MonoBehaviour
     private void TrySpawnNotes()
     {
         // Calculate the current beat based on the song timer and beat duration
-        float adjustedTime = BeatMapManager.Instance.SongTimer + BeatSpawnOffset;
+        float adjustedTime = BeatMapManager.Instance.SongTimer + BeatSpawnOffset * BeatMapManager.Instance.BeatDuration;
         float currentBeat = adjustedTime / BeatMapManager.Instance.BeatDuration;
 
         // Spawn notes for all beats that are due
         while (BeatQueue.Count > 0 && BeatQueue.Peek().beatStamp <= currentBeat)
         {
             BeatDataEntry beatEntry = BeatQueue.Dequeue();
-            int truthValue = Random.Range(0, 2); // Randomly assign truth value (0 or 1) for the note
+            
+            // Determine truth value based on the entry's setting
+            int truthValue;
+            if (beatEntry.truthValue == TruthValue.Random)
+            {
+                truthValue = Random.Range(0, 2); // Randomly assign truth value (0 or 1)
+            }
+            else
+            {
+                truthValue = (int)beatEntry.truthValue; // Use specified value (0 or 1)
+            }
+            
             int[] noteSpawnIndicesForBeat = GetNoteSpawnIndicesForBeat(truthValue);
-            SpawnNotesAtBeat(beatEntry.beatStamp, noteSpawnIndicesForBeat, beatEntry.laneIndex);
+            SpawnNotesAtBeat(beatEntry.beatStamp, noteSpawnIndicesForBeat, beatEntry.laneIndex, truthValue);
         }
     }
     
     private void TrySpawnBeatLines()
     {
         // Calculate the current beat based on the song timer and beat duration
-        float adjustedTime = BeatMapManager.Instance.SongTimer + BeatSpawnOffset;
+        float adjustedTime = BeatMapManager.Instance.SongTimer + BeatSpawnOffset * BeatMapManager.Instance.BeatDuration;
         float currentBeat = adjustedTime / BeatMapManager.Instance.BeatDuration;
         
         if (Mathf.Abs(currentBeat % 1) > 0.01f) return; // Only spawn on integer beats
         
         int currentBeatInt = Mathf.RoundToInt(currentBeat);
         
-        if (currentBeatInt % 1 != 0) return;
+        if (currentBeatInt % BeatMapManager.Instance.beatMapData.beatLineRate != 0) return;
 
         // Spawn beat lines on every beat on all lanes on all spawn locations
         
-        bool isSuperLine = currentBeatInt % 4 == 0;
+        bool isSuperLine = currentBeatInt % BeatMapManager.Instance.beatMapData.superBeatLineRate == 0;
 
         for (int lane = 0; lane < BeatMapManager.Instance.numberOfLanes; lane++)
         {
             for (int spawnLocation = 0; spawnLocation < BeatMapManager.Instance.numberOfSpawnLocations; spawnLocation++)
             {
-                Debug.Log($"Spawning Beat Line at Beat {currentBeat}, Lane {lane}, Spawn Location {spawnLocation}, IsSuperLine: {isSuperLine}");
-                noteSpawner.SpawnBeatLineInLane(currentBeat, lane, spawnLocation, isSuperLine, BeatSpawnOffset);
+                noteSpawner.SpawnBeatLineInLane(currentBeat, lane, spawnLocation, isSuperLine, TravelTimeInSeconds);
             }
         }
     }
@@ -139,13 +198,13 @@ public class BeatSplitter : MonoBehaviour
      * <param name="beatStamp">The beat timestamp at which to spawn the notes</param>
      * <param name="noteSpawnIndices">An array defining which spawn locations to use for the notes</param>
      * <param name="lane">The lane index in which to spawn the notes</param>
+     * <param name="realValue">The real value of the note (e.g., 0 or 1 for binary notes)</param>
      */
-    private void SpawnNotesAtBeat(float beatStamp, int[] noteSpawnIndices, int lane)
+    private void SpawnNotesAtBeat(float beatStamp, int[] noteSpawnIndices, int lane, int realValue)
     {
         for (int i = 0; i < noteSpawnIndices.Length; i++)
         {
-            noteSpawner.SpawnNoteInLane(beatStamp, lane, i, noteSpawnIndices[i], BeatSpawnOffset);
-            
+            noteSpawner.SpawnNoteInLane(beatStamp, lane, i, noteSpawnIndices[i], realValue, TravelTimeInSeconds);
         }
 
     }

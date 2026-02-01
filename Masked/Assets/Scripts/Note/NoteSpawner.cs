@@ -28,9 +28,10 @@ public class NoteSpawner : MonoBehaviour
      * <param name="laneIndex">The lane index in which to spawn the note.</param>
      * <param name="spawnLocationIndex">The index of the spawn location (row) to use.</param>
      * <param name="parity">The parity of the note (e.g., for distinguishing between different types of notes).</param>
+     * <param name="realValue">The real value of the note (e.g., 0 or 1 for binary notes).</param>
      * <param name="beatTravelTime">The time it takes for the note to travel from spawn to hit point in seconds.</param>
      */
-    public GameObject SpawnNoteInLane(float beatStamp, int laneIndex, int spawnLocationIndex, int parity, float beatTravelTime)
+    public GameObject SpawnNoteInLane(float beatStamp, int laneIndex, int spawnLocationIndex, int parity, int realValue, float beatTravelTime)
     {
         LogicNote note = notePool.Get();
         
@@ -45,7 +46,7 @@ public class NoteSpawner : MonoBehaviour
         }
         
         Action<Transform, Action> moveAction = path.GenerateNotePath(beatTravelTime);
-        note.MoveNote(beatStamp, laneIndex, spawnLocationIndex, parity, moveAction);
+        note.MoveNote(beatStamp, laneIndex, spawnLocationIndex, parity, realValue, moveAction);
         return note.gameObject;
     }
     
