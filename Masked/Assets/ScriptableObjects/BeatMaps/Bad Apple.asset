@@ -1,0 +1,739 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cc8eeed2a41428e93acacc31037cea5, type: 3}
+  m_Name: Bad Apple
+  m_EditorClassIdentifier: 
+  songTitle: Bad Apple
+  author: Touhou Company
+  coverArt: {fileID: 0}
+  bpm: 172
+  beats: 252
+  clip: {fileID: 8300000, guid: 56bed3a63f6214ad9977d75593304286, type: 3}
+  beatLineRate: 1
+  superBeatLineRate: 4
+  beatDataEntries:
+  - beatStamp: 0
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 1
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 1.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 4
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 6
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 7
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 8
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 10
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 12
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 13
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 14
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 15
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 16
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 16
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 18
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 19
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 20
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 20
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 22
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 24
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 26.25
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 28
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 30.25
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 32
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 32
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 36
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 36
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 38.25
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 40
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 40
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 42
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 44
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 45
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 47
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 48
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 49
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 50
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 52
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 54
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 56
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 58
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 59
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 59.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 60
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 64
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 64
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 66
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 68
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 70
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 70.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 71
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 71.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 72
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 76
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 76
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 78
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 80
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 80
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 84
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 84
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 86
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 86
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 88
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 88
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 89
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 90
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 91
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 92
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 93
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 94
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 95
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 96
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 97
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 98
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 99
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 100
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 101
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 102
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 103
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 104
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 105
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 106
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 107
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 108
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 109
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 110
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 111
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 112
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 114
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 116
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 118
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 120
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 122
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 124
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 126
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 128
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 129
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 130
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 131
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 132
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 132
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 133
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 134
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 136
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 136
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 138
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 138
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 140
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 140
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 142
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 142
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 144
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 145
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 146
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 147
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 148
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 149
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 150
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 151
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 152
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 152
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 160
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 161.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 162.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 163
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 164
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 165.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 166.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 167
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 168
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 169.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 170.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 171
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 172
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 172
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 173
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 173
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 174
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 174
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 175
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 175
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 176
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 177.5
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 178.5
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 179
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 180
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 181.5
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 182.5
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 183
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 184
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 185
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 186
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 187
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 188
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 188
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 189
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 189.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 190
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 190.5
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 191
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 191.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 192
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 192
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 193.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 194.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 195
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 196
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 197.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 198.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 199
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 199.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 200
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 201.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 202.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 203
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 204
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 204
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 205
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 205
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 206
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 206
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 207
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 207
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 208
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 208
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 209
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 210.5
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 211
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 212
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 212
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 213
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 214.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 215.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 216
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 216
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 217.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 217.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 218.5
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 219
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 219.5
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 220
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 220
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 221
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 221.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 222
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 222
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 223
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 223
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 224
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 225
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 225.5
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 228
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 229
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 230
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 231
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 232
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 234
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 236
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 237
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 238
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 239
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 240
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 240
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 242
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 243
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 244
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 244
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 246
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 248
+    laneIndex: 0
+    truthValue: 2
+  - beatStamp: 249
+    laneIndex: 1
+    truthValue: 2
+  - beatStamp: 250
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 251
+    laneIndex: 3
+    truthValue: 2
+  - beatStamp: 252
+    laneIndex: 2
+    truthValue: 2
+  - beatStamp: 252
+    laneIndex: 0
+    truthValue: 2
+  checkpoints:
+  - checkpointName: Checkpoint 2
+    beatStamp: 32
+  - checkpointName: Checkpoint 3
+    beatStamp: 96
+  - checkpointName: Checkpoint 1
+    beatStamp: 160
+  - checkpointName: Checkpoint 4
+    beatStamp: 232
+  - checkpointName: Checkpoint 5
+    beatStamp: 252

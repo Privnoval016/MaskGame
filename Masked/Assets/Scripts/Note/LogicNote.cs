@@ -20,6 +20,13 @@ public class LogicNote : MonoBehaviour, IPoolable
     public MeshRenderer[] noteRenderers;
     public Material[] zeroMaterials;
     public Material[] oneMaterials;
+    
+    private void OnDestroy()
+    {
+        // Stop all coroutines to prevent errors during scene transitions
+        StopAllCoroutines();
+        active = false;
+    }
 
     /**
      * <summary>
@@ -59,6 +66,12 @@ public class LogicNote : MonoBehaviour, IPoolable
     public void ReturnToPool(bool? successfullyHit, ScoreType scoreType)
     {
         if (!active) return;
+        
+        // Check if this object is still valid before starting coroutine
+        if (this == null || !gameObject.activeInHierarchy)
+        {
+            return;
+        }
         
         StartCoroutine(PauseThenReturn(pauseDuration, successfullyHit, scoreType));
     }

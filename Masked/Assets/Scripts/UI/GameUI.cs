@@ -67,6 +67,12 @@ public class GameUI : MonoBehaviour
         healthSegmentInitialScale = healthBarSegmentTransforms[0].localScale;
         
     }
+    
+    private void Start()
+    {
+        // Initialize the operation UI with the starting operation
+        InitializeOperationUI();
+    }
 
     private void OnDisable()
     {
@@ -147,7 +153,7 @@ public class GameUI : MonoBehaviour
     
     private void OnHealthChanged(HealthChangedEvent e)
     {
-        if (e.currentHealth <= 0 || e.currentHealth > e.maxHealth)
+        if (e.currentHealth < 0 || e.currentHealth > e.maxHealth)
             return;
         
         if (e.currentHealth < currentHealthSegmentsActive)
@@ -157,6 +163,8 @@ public class GameUI : MonoBehaviour
                 Deactivate(healthBarSegments[i], healthBarSegmentTransforms[i]);
                 currentHealthSegmentsActive--;
             }
+            
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.missHit);
         }
         else if (e.currentHealth > currentHealthSegmentsActive)
         {
@@ -190,12 +198,36 @@ public class GameUI : MonoBehaviour
         if (e.newOperation == currentOperator) return;
         
         currentOperator = e.newOperation;
-        
+        UpdateOperationUI(true); // Update with animation
+    }
+    
+    /// <summary>
+    /// Initialize the operation UI at game start
+    /// </summary>
+    private void InitializeOperationUI()
+    {
+        currentOperator = BeatMapManager.Instance.activeLogicOperation;
+        UpdateOperationUI(false); // Update without animation
+    }
+    
+    /// <summary>
+    /// Update the operation UI display
+    /// </summary>
+    private void UpdateOperationUI(bool animate)
+    {
         foreach (var img in operatorImages)
         {
             img.text = BeatMapManager.Instance.materialColorShifter.GetCurrentLogicData().displayName;
-            Tween.Color(img, BeatMapManager.Instance.materialColorShifter.GetCurrentLogicData().baseColor, 0.15f, Ease.InCubic);
-            img.gameObject.PulseOutIn(1.1f, 0.05f, 0f, 0.05f);
+            
+            if (animate)
+            {
+                Tween.Color(img, BeatMapManager.Instance.materialColorShifter.GetCurrentLogicData().baseColor, 0.15f, Ease.InCubic);
+                img.gameObject.PulseOutIn(1.1f, 0.05f, 0f, 0.05f);
+            }
+            else
+            {
+                img.color = BeatMapManager.Instance.materialColorShifter.GetCurrentLogicData().baseColor;
+            }
         }
     }
 }

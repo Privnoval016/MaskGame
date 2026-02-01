@@ -4,17 +4,19 @@ using UnityEngine;
 
 public class HealthManager : MonoBehaviour
 {
+    public bool isInvincible = false;
     public int maxHealth = 10;
     public int currentHealth;
-    public float gameOverDuration = 1.5f;
     public float invincibilityDuration = 0.25f; // quarter beat invincibility
     private float lastDamageBeatStamp = -Mathf.Infinity;
+    private bool gameOverTriggered = false; // Prevent multiple game over calls
 
     public EventBinding<ScoreChangedEvent> scoreChangedBinding;
 
     private void Awake()
     {
         currentHealth = maxHealth;
+        gameOverTriggered = false; // Reset for new game instance
         
         scoreChangedBinding = new EventBinding<ScoreChangedEvent>(OnScoreChanged);
         EventBus<ScoreChangedEvent>.Register(scoreChangedBinding);
@@ -38,6 +40,7 @@ public class HealthManager : MonoBehaviour
         
         lastDamageBeatStamp = BeatMapManager.Instance.CurrentBeatStamp;
         
+        if (isInvincible) return;
         ModifyHealth(-1);
     }
 
@@ -49,8 +52,9 @@ public class HealthManager : MonoBehaviour
         {
             currentHealth = maxHealth;
         }
-        else if (currentHealth < 0)
+        else if (currentHealth <= 0 && !gameOverTriggered)
         {
+            gameOverTriggered = true;
             GameOver();
         }
         
@@ -59,13 +63,16 @@ public class HealthManager : MonoBehaviour
     
     private void GameOver()
     {
-        Debug.Log("Game Over!");
-
-        Time.timeScale = 1f;
-        Tween.GlobalTimeScale(0f, gameOverDuration, Ease.OutQuad).OnComplete(() =>
+        Debug.Log("HealthManager.GameOver() called");
+        
+        if (GameManager.Instance != null)
         {
-            // Implement game over logic here (e.g., load game over screen)
-        });
+            GameManager.Instance.GameOver();
+        }
+        else
+        {
+            Debug.LogError("GameManager not found! Cannot trigger game over.");
+        }
     }
 }
 

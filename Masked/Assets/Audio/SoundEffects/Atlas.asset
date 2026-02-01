@@ -16,8 +16,8 @@ MonoBehaviour:
   correctHitOne: {fileID: 11400000, guid: 1f1023b58fda1423c9a067f0c083823d, type: 2}
   correctHitZero: {fileID: 11400000, guid: 48f72b0270bc946e6af124079005bc54, type: 2}
   incorrectHit: {fileID: 11400000, guid: e068cdcd0437440e0ab36700590015a2, type: 2}
-  missHit: {fileID: 0}
+  missHit: {fileID: 11400000, guid: aa80201ee22fd4453b6a95986f044210, type: 2}
   comboBreak: {fileID: 0}
   levelUp: {fileID: 0}
-  gameOver: {fileID: 0}
+  gameOver: {fileID: 11400000, guid: d034c8518e54e47518f759360bfdae5a, type: 2}
   operationChange: {fileID: 11400000, guid: aec317088e58b4261984dcb3c949734c, type: 2}

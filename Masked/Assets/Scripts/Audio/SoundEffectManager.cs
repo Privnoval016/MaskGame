@@ -82,4 +82,19 @@ public class SoundEffectManager : Singleton<SoundEffectManager>
     {
         activePlaysThisFrame = 0;
     }
+    
+    /// <summary>
+    /// Stop all currently playing sound effects immediately
+    /// </summary>
+    public void StopAll()
+    {
+        foreach (var source in sources)
+        {
+            if (source != null && source.isPlaying)
+            {
+                source.Stop();
+            }
+        }
+    }
 }
+

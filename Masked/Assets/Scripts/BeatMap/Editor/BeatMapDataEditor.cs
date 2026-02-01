@@ -8,7 +8,6 @@ public class BeatMapDataEditor : Editor
     private BeatMapData beatMap;
     private bool showBeatData = true;
     private bool showCheckpoints = true;
-    private bool showLogicData = true;
     private Vector2 beatDataScrollPos;
     private Vector2 checkpointScrollPos;
     
@@ -31,9 +30,6 @@ public class BeatMapDataEditor : Editor
         EditorGUILayout.Space(5);
         
         DrawCheckpointsSection();
-        EditorGUILayout.Space(5);
-        
-        DrawLogicDataSection();
         EditorGUILayout.Space(10);
         
         DrawFooter();
@@ -73,6 +69,36 @@ public class BeatMapDataEditor : Editor
     {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         
+        EditorGUILayout.LabelField("Song Info", EditorStyles.boldLabel);
+        EditorGUILayout.Space(3);
+        
+        // Song Title
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Song Title", GUILayout.Width(100));
+        SerializedProperty titleProp = serializedObject.FindProperty("songTitle");
+        EditorGUILayout.PropertyField(titleProp, GUIContent.none);
+        EditorGUILayout.EndHorizontal();
+        
+        // Author
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Author", GUILayout.Width(100));
+        SerializedProperty authorProp = serializedObject.FindProperty("author");
+        EditorGUILayout.PropertyField(authorProp, GUIContent.none);
+        EditorGUILayout.EndHorizontal();
+        
+        // Cover Art
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Cover Art", GUILayout.Width(100));
+        SerializedProperty coverProp = serializedObject.FindProperty("coverArt");
+        EditorGUILayout.PropertyField(coverProp, GUIContent.none);
+        EditorGUILayout.EndHorizontal();
+        
+        if (beatMap.coverArt == null)
+        {
+            EditorGUILayout.HelpBox("Assign a cover art sprite for menu display", MessageType.Info);
+        }
+        
+        EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("Song Data", EditorStyles.boldLabel);
         EditorGUILayout.Space(3);
         
@@ -152,7 +178,7 @@ public class BeatMapDataEditor : Editor
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         
         EditorGUILayout.BeginHorizontal();
-        showBeatData = EditorGUILayout.Foldout(showBeatData, $"🎯 Beat Data ({beatMap.beatDataEntries?.Length ?? 0} notes)", true, EditorStyles.foldoutHeader);
+        showBeatData = EditorGUILayout.Foldout(showBeatData, $"Beat Data ({beatMap.beatDataEntries?.Length ?? 0} notes)", true, EditorStyles.foldoutHeader);
         
         GUILayout.FlexibleSpace();
         
@@ -249,7 +275,7 @@ public class BeatMapDataEditor : Editor
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         
         EditorGUILayout.BeginHorizontal();
-        showCheckpoints = EditorGUILayout.Foldout(showCheckpoints, $"🚩 Checkpoints ({beatMap.checkpoints?.Length ?? 0})", true, EditorStyles.foldoutHeader);
+        showCheckpoints = EditorGUILayout.Foldout(showCheckpoints, $"Checkpoints ({beatMap.checkpoints?.Length ?? 0})", true, EditorStyles.foldoutHeader);
         
         GUILayout.FlexibleSpace();
         
@@ -309,28 +335,7 @@ public class BeatMapDataEditor : Editor
             }
         }
         
-        EditorGUILayout.EndVertical();
-    }
-    
-    private void DrawLogicDataSection()
-    {
-        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        
-        showLogicData = EditorGUILayout.Foldout(showLogicData, "⚡ Logic Operations", true, EditorStyles.foldoutHeader);
-        
-        if (showLogicData)
-        {
-            EditorGUILayout.Space(5);
-            
-            SerializedProperty operationsProp = serializedObject.FindProperty("allowedOperations");
-            EditorGUILayout.PropertyField(operationsProp, new GUIContent("Allowed Operations"), true);
-            
-            if (beatMap.allowedOperations == null || beatMap.allowedOperations.Length == 0)
-            {
-                EditorGUILayout.HelpBox("No logic operations allowed. Add operations to enable logic-based gameplay.", MessageType.Info);
-            }
-        }
-        
+
         EditorGUILayout.EndVertical();
     }
     

@@ -16,6 +16,8 @@ public class ScoreManager : MonoBehaviour
     public float totalScore = 0;
     public float correctCombo = 0;
     public float allCombo = 0;
+    public float maxCorrectCombo = 0; // Track maximum correct combo achieved
+    public float maxAllCombo = 0; // Track maximum all combo achieved
     
     private EventBinding<LogicNoteHitEvent> hitEventBinding;
 
@@ -63,10 +65,6 @@ public class ScoreManager : MonoBehaviour
         {
             SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.incorrectHit);
         }
-        else
-        {
-            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.missHit);
-        }
         
         
         if (profile == null)
@@ -80,12 +78,19 @@ public class ScoreManager : MonoBehaviour
             totalScore += profile.correctScoreIncrease;
             allCombo++;
             correctCombo++;
+            
+            // Track max combos
+            if (allCombo > maxAllCombo) maxAllCombo = allCombo;
+            if (correctCombo > maxCorrectCombo) maxCorrectCombo = correctCombo;
         }
         else if (e.isCorrect == false)
         {
             totalScore += profile.incorrectScoreIncrease;
             allCombo++;
             correctCombo = 0; // reset correct combo on incorrect hit
+            
+            // Track max all combo
+            if (allCombo > maxAllCombo) maxAllCombo = allCombo;
         }
         else
         {

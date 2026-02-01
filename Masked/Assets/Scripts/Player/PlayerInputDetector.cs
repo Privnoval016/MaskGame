@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
 {
     private PlayerInput playerInput;
+    private bool inputEnabled = true;
 
     private void Awake()
     {
@@ -16,17 +17,38 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
     private void OnEnable()
     {
         playerInput.Playing.Enable();
+        inputEnabled = true;
     }
     
     private void OnDisable()
     {
         playerInput.Playing.Disable();
     }
+    
+    /// <summary>
+    /// Disable all input (e.g., during game over)
+    /// </summary>
+    public void DisableInput()
+    {
+        inputEnabled = false;
+        playerInput.Playing.Disable();
+    }
+    
+    /// <summary>
+    /// Enable input
+    /// </summary>
+    public void EnableInput()
+    {
+        inputEnabled = true;
+        playerInput.Playing.Enable();
+    }
 
     #region IPlayingActions Implementation
 
     public void OnTile1(InputAction.CallbackContext context)
     {
+        if (!inputEnabled) return;
+        
         Debug.Log(context.performed);
         if (context.performed)
         {
@@ -39,6 +61,8 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
     
     public void OnTile2(InputAction.CallbackContext context)
     {
+        if (!inputEnabled) return;
+        
         if (context.performed)
         {
             Vector2 direction = context.ReadValue<Vector2>();
@@ -50,6 +74,8 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
     
     public void OnTile3(InputAction.CallbackContext context)
     {
+        if (!inputEnabled) return;
+        
         if (context.performed)
         {
             Vector2 direction = context.ReadValue<Vector2>();
@@ -61,6 +87,8 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
     
     public void OnTile4(InputAction.CallbackContext context)
     {
+        if (!inputEnabled) return;
+        
         if (context.performed)
         {
             Vector2 direction = context.ReadValue<Vector2>();

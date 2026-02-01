@@ -11,6 +11,11 @@ public enum TruthValue
 [CreateAssetMenu(fileName = "New BeatMap Data", menuName = "BeatMap/BeatMap Data")]
 public class BeatMapData : ScriptableObject
 {
+    [Header("Song Info")]
+    public string songTitle = "Untitled Song";
+    public string author = "Unknown Artist";
+    public Sprite coverArt; // Song cover image for menu display
+    
     [Header("Song Data")]
     public int bpm; // Beats per minute of the song
 
@@ -24,9 +29,6 @@ public class BeatMapData : ScriptableObject
     [Header("Beat Data")]
     public BeatDataEntry[] beatDataEntries;
     public BeatMapCheckpoint[] checkpoints;
-
-    [Header("Logic Data")]
-    public LogicOperation[] allowedOperations; // Logic operations allowed in this beatmap
 }
 
 [Serializable]

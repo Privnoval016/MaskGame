@@ -15,9 +15,11 @@ public class BeatMapManager : Singleton<BeatMapManager>
     public MusicManager musicManager;
     public ScoreManager scoreManager;
     public float startupDelay = 2f; // Delay before the first beat spawns, to give player time to prepare and account for initial note travel time
+    public float songBufferInSeconds = 3f; // Extra time after the last beat before considering the song ended.
     public float BeatDuration => 60f / beatMapData.bpm; // Duration of a single beat in seconds.
     
     private bool musicBegan = false;
+    private bool songEnded = false; // Flag to ensure song end only triggers once
     
     public int numberOfLanes = 4; // Total number of lanes available (valid note indices: 0 to numberOfLanes - 1)
     public int numberOfSpawnLocations = 2; // Number of different spawn locations for notes (right now top and bottom)
@@ -39,7 +41,14 @@ public class BeatMapManager : Singleton<BeatMapManager>
     
     protected override void Awake()
     {
-        base.Awake(); 
+        base.Awake();
+        
+        // Use beatmap from LivePlayData if available
+        if (GameManager.Instance?.livePlayData?.selectedBeatMap != null)
+        {
+            beatMapData = GameManager.Instance.livePlayData.selectedBeatMap;
+        }
+        
         materialColorShifter = GetComponent<MaterialColorShifter>();
         dspStartTime = (float)AudioSettings.dspTime + startupDelay; // set the dsp start time to be startupDelay seconds in the future
         musicManager.PlayMusic(beatMapData.clip, dspStartTime);
@@ -48,11 +57,30 @@ public class BeatMapManager : Singleton<BeatMapManager>
         EventBus<ButtonPressedEvent>.Register(buttonPressedBinding);
         
         InitializeLogicSplitters();
+        PickRandomOperation(); // Pick initial operation from enabled operations
     }
 
     private void Start()
     {
         materialColorShifter.ShiftColors(activeLogicOperation);
+    }
+    
+    /// <summary>
+    /// Picks a random logic operation from the enabled operations in LivePlayData
+    /// </summary>
+    public void PickRandomOperation()
+    {
+        if (GameManager.Instance?.livePlayData?.enabledOperations != null &&
+            GameManager.Instance.livePlayData.enabledOperations.Length > 0)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, GameManager.Instance.livePlayData.enabledOperations.Length);
+            activeLogicOperation = GameManager.Instance.livePlayData.enabledOperations[randomIndex];
+        }
+        else
+        {
+            // Fallback to OR if no operations are set
+            activeLogicOperation = LogicOperation.Or;
+        }
     }
 
     private void OnDisable()
@@ -67,6 +95,38 @@ public class BeatMapManager : Singleton<BeatMapManager>
         if (!musicBegan && SongTimer >= 0f)
         {
             musicBegan = true;
+            Debug.Log("Music began!");
+        }
+        
+        // Check if song has ended - only trigger once
+        if (musicBegan && !songEnded && CurrentBeatStamp >= beatMapData.beats + (songBufferInSeconds / BeatDuration))
+        {
+            songEnded = true;
+            Debug.Log($"Song end condition met! CurrentBeatStamp: {CurrentBeatStamp} >= beatMapData.beats: {beatMapData.beats}");
+            OnSongEnd();
+        }
+    }
+    
+    private void OnSongEnd()
+    {
+        Debug.Log($"OnSongEnd called! Stats will be shown now.");
+        
+        // Get stats from ScoreManager
+        int totalScore = Mathf.RoundToInt(scoreManager.totalScore);
+        int maxAllCombo = Mathf.RoundToInt(scoreManager.maxAllCombo);
+        int maxCorrectCombo = Mathf.RoundToInt(scoreManager.maxCorrectCombo);
+        
+        Debug.Log($"Song ended! Stats - Score: {totalScore}, MaxCombo: {maxAllCombo}, MaxCorrectCombo: {maxCorrectCombo}");
+        
+        // Call GameManager to show level complete
+        if (GameManager.Instance != null)
+        {
+            Debug.Log("Calling GameManager.LevelComplete...");
+            GameManager.Instance.LevelComplete(totalScore, maxAllCombo, maxCorrectCombo);
+        }
+        else
+        {
+            Debug.LogError("GameManager not found! Cannot trigger level complete.");
         }
     }
 
@@ -137,16 +197,24 @@ public class BeatMapManager : Singleton<BeatMapManager>
     public void CycleOperation(BeatMapCheckpoint checkpoint)
     {
         LogicOperation previousOperation = activeLogicOperation;
-        // Cycle to a random logic operation from the allowed operations in the beat map data
-        Array allowedOps = beatMapData.allowedOperations;
+        
+        // Get enabled operations from LivePlayData (player selection)
+        LogicOperation[] allowedOps = GameManager.Instance?.livePlayData?.enabledOperations;
+        
+        // Fallback to all operations if LivePlayData not set
+        if (allowedOps == null || allowedOps.Length == 0)
+        {
+            allowedOps = (LogicOperation[])Enum.GetValues(typeof(LogicOperation));
+        }
+        
+        // Cycle to a different random operation
         int currentIndex = Array.IndexOf(allowedOps, activeLogicOperation);
         int newIndex = currentIndex;
         while (newIndex == currentIndex && allowedOps.Length > 1)
         {
             newIndex = UnityEngine.Random.Range(0, allowedOps.Length);
         }
-        activeLogicOperation = (LogicOperation) allowedOps.GetValue(newIndex);
-        
+        activeLogicOperation = allowedOps[newIndex];
         
         materialColorShifter.ShiftColors(activeLogicOperation);
         

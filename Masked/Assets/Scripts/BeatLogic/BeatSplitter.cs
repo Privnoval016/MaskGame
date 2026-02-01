@@ -13,16 +13,15 @@ public class BeatSplitter : MonoBehaviour
     public NoteSpawner noteSpawner;
     
     [Header("Spawn Settings")]
-    [Tooltip("Note speed - Higher = faster notes (more difficult), Lower = slower notes (easier). Range: 1-10")]
-    [Range(1f, 10f)]
-    public float playSpeed = 5f; // Speed at which notes travel
-    
     [Tooltip("Base travel time in beats at speed 5. Used to calculate actual travel time based on playSpeed")]
     public float baseTravelTimeInBeats = 2f; // At playSpeed = 5, notes take 2 beats to travel
     
+    // Get play speed from GameManager's LivePlayData, fallback to 5 if not set
+    private float PlaySpeed => GameManager.Instance?.livePlayData?.playSpeed ?? 5f;
+    
     // Calculate travel time inversely proportional to playSpeed
     // Higher playSpeed = shorter travel time = faster notes
-    private float TravelTimeInBeats => baseTravelTimeInBeats * (5f / playSpeed);
+    private float TravelTimeInBeats => baseTravelTimeInBeats * (5f / PlaySpeed);
     
     public float BeatSpawnOffset => TravelTimeInBeats; // Spawn notes this many beats early so they reach the hit point on time
     
@@ -41,45 +40,6 @@ public class BeatSplitter : MonoBehaviour
         InitializeBeatMap();
     }
 
-    private void Start()
-    {
-        // Pre-spawn notes that should be visible at the start
-        // We need to spawn any notes that fall within the initial spawn window
-        SpawnInitialNotes();
-    }
-
-    private void SpawnInitialNotes()
-    {
-        // At song start (SongTimer = 0), we need to spawn notes up to BeatSpawnOffset beats
-        float initialSpawnBeat = TravelTimeInBeats;
-        
-        // Create a temporary list to hold notes we need to spawn initially
-        List<BeatDataEntry> initialNotes = new List<BeatDataEntry>();
-        
-        // Check which notes from the queue should be pre-spawned
-        while (BeatQueue.Count > 0 && BeatQueue.Peek().beatStamp <= initialSpawnBeat)
-        {
-            initialNotes.Add(BeatQueue.Dequeue());
-        }
-        
-        // Spawn all initial notes
-        foreach (var beatEntry in initialNotes)
-        {
-            // Determine truth value based on the entry's setting
-            int truthValue;
-            if (beatEntry.truthValue == TruthValue.Random)
-            {
-                truthValue = Random.Range(0, 2);
-            }
-            else
-            {
-                truthValue = (int)beatEntry.truthValue;
-            }
-            
-            int[] noteSpawnIndicesForBeat = GetNoteSpawnIndicesForBeat(truthValue);
-            SpawnNotesAtBeat(beatEntry.beatStamp, noteSpawnIndicesForBeat, beatEntry.laneIndex, truthValue);
-        }
-    }
 
     private void Update()
     {
@@ -127,6 +87,11 @@ public class BeatSplitter : MonoBehaviour
 
     private void TrySpawnNotes()
     {
+        // Allow spawning when we're within travel time of the song start
+        // This ensures notes for beat 0 spawn early enough to travel to the hit zone
+        float earliestAllowedSpawnTime = -(BeatSpawnOffset * BeatMapManager.Instance.BeatDuration);
+        if (BeatMapManager.Instance.SongTimer < earliestAllowedSpawnTime) return;
+        
         // Calculate the current beat based on the song timer and beat duration
         float adjustedTime = BeatMapManager.Instance.SongTimer + BeatSpawnOffset * BeatMapManager.Instance.BeatDuration;
         float currentBeat = adjustedTime / BeatMapManager.Instance.BeatDuration;
@@ -154,6 +119,10 @@ public class BeatSplitter : MonoBehaviour
     
     private void TrySpawnBeatLines()
     {
+        // Allow spawning when we're within travel time of the song start
+        float earliestAllowedSpawnTime = -(BeatSpawnOffset * BeatMapManager.Instance.BeatDuration);
+        if (BeatMapManager.Instance.SongTimer < earliestAllowedSpawnTime) return;
+        
         // Calculate the current beat based on the song timer and beat duration
         float adjustedTime = BeatMapManager.Instance.SongTimer + BeatSpawnOffset * BeatMapManager.Instance.BeatDuration;
         float currentBeat = adjustedTime / BeatMapManager.Instance.BeatDuration;

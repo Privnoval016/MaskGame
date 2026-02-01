@@ -128,6 +128,12 @@ public class NotePath : MonoBehaviour
         {
             Tween.Custom(0f, 1f, totalTravelTime, tLinear =>
             {
+                // Check if target still exists before accessing
+                if (target == null)
+                {
+                    return;
+                }
+                
                 // Clamp to valid range
                 tLinear = Mathf.Clamp01(tLinear);
                 
@@ -153,7 +159,14 @@ public class NotePath : MonoBehaviour
                     target.position += new Vector3(0f, 0f, lastSegmentZOffset * segmentT);
                 }
 
-            }, ease: Ease.Linear).OnComplete(() => onComplete?.Invoke());
+            }, ease: Ease.Linear).OnComplete(() =>
+            {
+                // Check if target still exists before invoking callback
+                if (target != null)
+                {
+                    onComplete?.Invoke();
+                }
+            });
         };
     }
 

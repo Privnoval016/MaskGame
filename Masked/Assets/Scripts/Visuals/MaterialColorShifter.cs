@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using PrimeTween;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MaterialColorShifter : MonoBehaviour
 {
@@ -12,10 +14,16 @@ public class MaterialColorShifter : MonoBehaviour
     [SerializeField] private Material[] materialsToShiftDark;
     [SerializeField] private Material[] materialsToShiftHDR;
     [SerializeField] private Material[] materialsToShiftMediumHDR;
+
+    [SerializeField] private TMP_Text[] textsToApplyGlow;
+    
+    [SerializeField] private Image[] imagesToApplyColor;
+    [SerializeField] private Image[] imagesToApplyInverseColor;
     
     [SerializeField] private CustomBaseColorOverride[] customBaseColorOverrides;
 
     [SerializeField] private Material scrollingMaterial;
+    [SerializeField] private Material backgroundMaterial;
     
     [Header("Logic Mapping")]
     [SerializeField] private LogicOperationInfo[] logicOperationInfos;
@@ -34,6 +42,16 @@ public class MaterialColorShifter : MonoBehaviour
         {
             if (!logicOperationInfoDict.ContainsKey(info.operation))
                 logicOperationInfoDict.Add(info.operation, info);
+        }
+
+        foreach (TMP_Text text in textsToApplyGlow)
+        {
+            // duplicate material and enable glow keyword
+            
+            if (text == null) continue;
+            Material textMat = Instantiate(text.fontMaterial);
+            textMat.EnableKeyword("GLOW_ON");
+            text.fontMaterial = textMat;
         }
     }
 
@@ -91,11 +109,37 @@ public class MaterialColorShifter : MonoBehaviour
             Tween.MaterialProperty(mat, EmissionColorID, emission, shiftDuration);
         }
         
+        // Text glow colors
+        foreach (var text in textsToApplyGlow)
+        {
+            if (text == null) continue;
+            Material textMat = text.fontMaterial;
+            int glowColorID = Shader.PropertyToID("_GlowColor");
+            Tween.MaterialProperty(textMat, glowColorID, info.baseColor, shiftDuration);
+        }
+        
+        // Image colors
+        foreach (var image in imagesToApplyColor)
+        {
+            if (image == null) continue;
+            Tween.Color(image, info.baseColor, shiftDuration);
+        }
+        
+        foreach (var image in imagesToApplyInverseColor)
+        {
+            if (image == null) continue;
+            Color inverseColor = info.InvertedColor;
+            Tween.Color(image, inverseColor, shiftDuration);
+        }
+        
         int neonColorID = Shader.PropertyToID("_CoreColor");
         int haloColorID = Shader.PropertyToID("_GlowColor");
         Sequence.Create()
             .Group(Tween.MaterialProperty(scrollingMaterial, neonColorID, info.mediumHdrColor, shiftDuration))
             .Group(Tween.MaterialProperty(scrollingMaterial, haloColorID, info.haloColor, shiftDuration));
+        
+        int colorID = Shader.PropertyToID("_Color");
+        Tween.MaterialProperty(backgroundMaterial, colorID, info.baseColor, shiftDuration);
     }
     
     public LogicOperationInfo GetCurrentLogicData()
