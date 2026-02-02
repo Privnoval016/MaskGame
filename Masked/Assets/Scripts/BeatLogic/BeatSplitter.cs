@@ -90,18 +90,26 @@ public class BeatSplitter : MonoBehaviour
     
     private void InitializeBeatMap()
     {
-        // sort beat data entries in ascending order of beatStamp
-        Array.Sort(BeatMapData.beatDataEntries, (a, b) => a.beatStamp.CompareTo(b.beatStamp));
+        // Get beat data for selected difficulty
+        Difficulty selectedDifficulty = GameManager.Instance?.livePlayData?.selectedDifficulty ?? Difficulty.Medium;
+        BeatDataEntry[] beatData = BeatMapData.GetBeatDataForDifficulty(selectedDifficulty);
         
-        foreach (var beat in BeatMapData.beatDataEntries)
+        // Sort beat data entries in ascending order of beatStamp
+        Array.Sort(beatData, (a, b) => a.beatStamp.CompareTo(b.beatStamp));
+        
+        foreach (var beat in beatData)
         {
-            BeatQueue.Enqueue(beat); // Enqueue all beat stamps from the beat map data, so when a certain 
+            BeatQueue.Enqueue(beat); // Enqueue all beat stamps from the beat map data
         }
         
-        Array.Sort(BeatMapData.checkpoints, (a, b) => a.beatStamp.CompareTo(b.beatStamp));
-        foreach (var checkpoint in BeatMapData.checkpoints)
+        // Initialize checkpoints
+        if (BeatMapData.checkpoints != null)
         {
-            CheckpointQueue.Enqueue(checkpoint); // Enqueue all checkpoints from the beat map data
+            Array.Sort(BeatMapData.checkpoints, (a, b) => a.beatStamp.CompareTo(b.beatStamp));
+            foreach (var checkpoint in BeatMapData.checkpoints)
+            {
+                CheckpointQueue.Enqueue(checkpoint); // Enqueue all checkpoints from the beat map data
+            }
         }
     }
 

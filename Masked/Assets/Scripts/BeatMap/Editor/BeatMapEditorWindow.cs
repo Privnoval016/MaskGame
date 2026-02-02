@@ -8,6 +8,9 @@ public class BeatMapEditorWindow : EditorWindow
     private BeatMapData beatMapData;
     private AudioSource previewAudioSource;
     
+    // Difficulty selection
+    private Difficulty selectedDifficulty = Difficulty.Medium;
+    
     // Timeline settings
     private float currentBeat;
     private float zoom = 1f;
@@ -35,6 +38,10 @@ public class BeatMapEditorWindow : EditorWindow
     private List<BeatDataEntry> clipboard = new List<BeatDataEntry>();
     private float clipboardStartBeat; // Used to maintain relative positioning when pasting
     
+    // Difficulty clipboard for copying entire difficulties
+    private BeatDataEntry[] difficultyClipboard = null;
+    private Difficulty copiedDifficulty;
+    
     // Tool mode
     private enum ToolMode { Place, Erase, Select }
     private ToolMode currentTool = ToolMode.Place;
@@ -48,6 +55,47 @@ public class BeatMapEditorWindow : EditorWindow
     {
         var window = GetWindow<BeatMapEditorWindow>("BeatMap Editor");
         window.minSize = new Vector2(800, 600);
+    }
+    
+    /// <summary>
+    /// Get the beat data entries for the currently selected difficulty
+    /// </summary>
+    private BeatDataEntry[] GetCurrentBeatData()
+    {
+        if (beatMapData == null) return new BeatDataEntry[0];
+        
+        int difficultyIndex = (int)selectedDifficulty;
+        if (beatMapData.difficultyBeatMaps == null || difficultyIndex >= beatMapData.difficultyBeatMaps.Length)
+        {
+            return new BeatDataEntry[0];
+        }
+        
+        return beatMapData.difficultyBeatMaps[difficultyIndex].beatDataEntries ?? new BeatDataEntry[0];
+    }
+    
+    /// <summary>
+    /// Set the beat data entries for the currently selected difficulty
+    /// </summary>
+    private void SetCurrentBeatData(BeatDataEntry[] entries)
+    {
+        if (beatMapData == null) return;
+        
+        // Ensure difficulty beatmaps array is initialized
+        if (beatMapData.difficultyBeatMaps == null || beatMapData.difficultyBeatMaps.Length != 5)
+        {
+            beatMapData.difficultyBeatMaps = new DifficultyBeatMap[5];
+            for (int i = 0; i < 5; i++)
+            {
+                beatMapData.difficultyBeatMaps[i] = new DifficultyBeatMap
+                {
+                    difficulty = (Difficulty)i,
+                    beatDataEntries = new BeatDataEntry[0]
+                };
+            }
+        }
+        
+        int difficultyIndex = (int)selectedDifficulty;
+        beatMapData.difficultyBeatMaps[difficultyIndex].beatDataEntries = entries;
     }
     
     private void OnEnable()
@@ -113,6 +161,15 @@ public class BeatMapEditorWindow : EditorWindow
             OnBeatMapChanged();
         }
         
+        GUILayout.Space(10);
+        
+        // Difficulty selection
+        if (beatMapData != null)
+        {
+            EditorGUILayout.LabelField("Difficulty:", GUILayout.Width(60));
+            selectedDifficulty = (Difficulty)EditorGUILayout.EnumPopup(selectedDifficulty, GUILayout.Width(120));
+        }
+        
         GUILayout.FlexibleSpace();
         
         // Tool buttons
@@ -123,6 +180,22 @@ public class BeatMapEditorWindow : EditorWindow
         if (GUILayout.Button("Save", EditorStyles.toolbarButton, GUILayout.Width(50)))
         {
             SaveBeatMap();
+        }
+        
+        // Difficulty management buttons
+        if (GUILayout.Button("Copy Difficulty", EditorStyles.toolbarButton, GUILayout.Width(100)))
+        {
+            CopyCurrentDifficulty();
+        }
+        
+        if (GUILayout.Button("Paste Difficulty", EditorStyles.toolbarButton, GUILayout.Width(100)))
+        {
+            PasteDifficulty();
+        }
+        
+        if (GUILayout.Button("Clear Difficulty", EditorStyles.toolbarButton, GUILayout.Width(100)))
+        {
+            ClearCurrentDifficulty();
         }
         
         EditorGUILayout.EndHorizontal();
@@ -253,7 +326,7 @@ public class BeatMapEditorWindow : EditorWindow
         
         // Stats
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField($"BPM: {beatMapData.bpm} | Total Beats: {beatMapData.beats} | Notes: {(beatMapData.beatDataEntries?.Length ?? 0)}", EditorStyles.miniLabel);
+        EditorGUILayout.LabelField($"BPM: {beatMapData.bpm} | Total Beats: {beatMapData.beats} | Notes ({selectedDifficulty}): {GetCurrentBeatData().Length}", EditorStyles.miniLabel);
         EditorGUILayout.EndHorizontal();
         
         EditorGUILayout.EndVertical();
@@ -261,24 +334,24 @@ public class BeatMapEditorWindow : EditorWindow
     
     private void SetSelectedNotesTruthValue(TruthValue value)
     {
+        BeatDataEntry[] currentBeatData = GetCurrentBeatData();
+        
         foreach (int index in selectedNotes)
         {
-            if (index >= 0 && index < beatMapData.beatDataEntries.Length)
+            if (index >= 0 && index < currentBeatData.Length)
             {
-                beatMapData.beatDataEntries[index].truthValue = value;
+                currentBeatData[index].truthValue = value;
             }
         }
         
+        SetCurrentBeatData(currentBeatData);
         EditorUtility.SetDirty(beatMapData);
         Repaint();
     }
     
     private void DrawBeatMapGrid()
     {
-        if (beatMapData.beatDataEntries == null)
-        {
-            beatMapData.beatDataEntries = new BeatDataEntry[0];
-        }
+        BeatDataEntry[] currentBeatData = GetCurrentBeatData();
         
         Rect gridRect = new Rect(0, 130, position.width, position.height - 130);
         GUILayout.BeginArea(gridRect);
@@ -406,11 +479,12 @@ public class BeatMapEditorWindow : EditorWindow
     
     private void DrawNotes(Rect gridRect, float cellHeight, float cellWidth)
     {
-        if (beatMapData.beatDataEntries == null) return;
+        BeatDataEntry[] currentBeatData = GetCurrentBeatData();
+        if (currentBeatData == null) return;
         
-        for (int i = 0; i < beatMapData.beatDataEntries.Length; i++)
+        for (int i = 0; i < currentBeatData.Length; i++)
         {
-            BeatDataEntry entry = beatMapData.beatDataEntries[i];
+            BeatDataEntry entry = currentBeatData[i];
             
             if (entry.laneIndex < 0 || entry.laneIndex >= numLanes) continue;
             
@@ -589,9 +663,11 @@ public class BeatMapEditorWindow : EditorWindow
 
     private void PlaceNote(float beat, int lane)
     {
+        BeatDataEntry[] currentBeatData = GetCurrentBeatData();
+        
         // Check if note already exists at this position
         bool exists = false;
-        foreach (var entry in beatMapData.beatDataEntries)
+        foreach (var entry in currentBeatData)
         {
             if (Mathf.Abs(entry.beatStamp - beat) < 0.01f && entry.laneIndex == lane)
             {
@@ -603,9 +679,9 @@ public class BeatMapEditorWindow : EditorWindow
         if (!exists)
         {
             var newEntry = new BeatDataEntry { beatStamp = beat, laneIndex = lane };
-            var list = beatMapData.beatDataEntries.ToList();
+            var list = currentBeatData.ToList();
             list.Add(newEntry);
-            beatMapData.beatDataEntries = list.ToArray();
+            SetCurrentBeatData(list.ToArray());
 
             EditorUtility.SetDirty(beatMapData);
             Repaint();
@@ -614,7 +690,8 @@ public class BeatMapEditorWindow : EditorWindow
 
     private void EraseNoteAt(float beat, int lane)
     {
-        var list = beatMapData.beatDataEntries.ToList();
+        BeatDataEntry[] currentBeatData = GetCurrentBeatData();
+        var list = currentBeatData.ToList();
         float snapTolerance = snapValues[currentSnapIndex] * 0.5f;
 
         list.RemoveAll(entry =>
@@ -622,9 +699,9 @@ public class BeatMapEditorWindow : EditorWindow
             entry.laneIndex == lane
         );
 
-        if (list.Count != beatMapData.beatDataEntries.Length)
+        if (list.Count != currentBeatData.Length)
         {
-            beatMapData.beatDataEntries = list.ToArray();
+            SetCurrentBeatData(list.ToArray());
             EditorUtility.SetDirty(beatMapData);
             Repaint();
         }
@@ -632,6 +709,8 @@ public class BeatMapEditorWindow : EditorWindow
 
     private void SelectNoteAt(float beat, int lane, bool addToSelection)
     {
+        BeatDataEntry[] currentBeatData = GetCurrentBeatData();
+        
         if (!addToSelection)
         {
             selectedNotes.Clear();
@@ -639,9 +718,9 @@ public class BeatMapEditorWindow : EditorWindow
 
         float snapTolerance = snapValues[currentSnapIndex] * 0.5f;
 
-        for (int i = 0; i < beatMapData.beatDataEntries.Length; i++)
+        for (int i = 0; i < currentBeatData.Length; i++)
         {
-            var entry = beatMapData.beatDataEntries[i];
+            var entry = currentBeatData[i];
             if (Mathf.Abs(entry.beatStamp - beat) < snapTolerance && entry.laneIndex == lane)
             {
                 if (selectedNotes.Contains(i))
@@ -663,7 +742,8 @@ public class BeatMapEditorWindow : EditorWindow
     {
         if (selectedNotes.Count == 0) return;
 
-        var list = beatMapData.beatDataEntries.ToList();
+        BeatDataEntry[] currentBeatData = GetCurrentBeatData();
+        var list = currentBeatData.ToList();
         var indicesToRemove = selectedNotes.OrderByDescending(i => i).ToList();
 
         foreach (int index in indicesToRemove)
@@ -674,7 +754,7 @@ public class BeatMapEditorWindow : EditorWindow
             }
         }
 
-        beatMapData.beatDataEntries = list.ToArray();
+        SetCurrentBeatData(list.ToArray());
         selectedNotes.Clear();
 
         EditorUtility.SetDirty(beatMapData);
@@ -727,10 +807,12 @@ public class BeatMapEditorWindow : EditorWindow
 
         if (beatMapData != null)
         {
+            BeatDataEntry[] currentBeatData = GetCurrentBeatData();
+            
             // Auto-detect number of lanes
-            if (beatMapData.beatDataEntries != null && beatMapData.beatDataEntries.Length > 0)
+            if (currentBeatData != null && currentBeatData.Length > 0)
             {
-                int maxLane = beatMapData.beatDataEntries.Max(e => e.laneIndex);
+                int maxLane = currentBeatData.Max(e => e.laneIndex);
                 numLanes = Mathf.Max(numLanes, maxLane + 1);
             }
         }
@@ -760,7 +842,17 @@ public class BeatMapEditorWindow : EditorWindow
             BeatMapData newBeatMap = CreateInstance<BeatMapData>();
             newBeatMap.bpm = 120;
             newBeatMap.beats = 100;
-            newBeatMap.beatDataEntries = new BeatDataEntry[0];
+            
+            // Initialize difficulty beatmaps
+            newBeatMap.difficultyBeatMaps = new DifficultyBeatMap[5];
+            for (int i = 0; i < 5; i++)
+            {
+                newBeatMap.difficultyBeatMaps[i] = new DifficultyBeatMap
+                {
+                    difficulty = (Difficulty)i,
+                    beatDataEntries = new BeatDataEntry[0]
+                };
+            }
 
             AssetDatabase.CreateAsset(newBeatMap, path);
             AssetDatabase.SaveAssets();
@@ -779,13 +871,14 @@ public class BeatMapEditorWindow : EditorWindow
         }
         
         clipboard.Clear();
+        BeatDataEntry[] currentBeatData = GetCurrentBeatData();
         
         float minBeat = float.MaxValue;
         foreach (int index in selectedNotes)
         {
-            if (index >= 0 && index < beatMapData.beatDataEntries.Length)
+            if (index >= 0 && index < currentBeatData.Length)
             {
-                BeatDataEntry entry = beatMapData.beatDataEntries[index];
+                BeatDataEntry entry = currentBeatData[index];
                 clipboard.Add(new BeatDataEntry 
                 { 
                     beatStamp = entry.beatStamp, 
@@ -810,7 +903,8 @@ public class BeatMapEditorWindow : EditorWindow
             return;
         }
         
-        var list = beatMapData.beatDataEntries.ToList();
+        BeatDataEntry[] currentBeatData = GetCurrentBeatData();
+        var list = currentBeatData.ToList();
         float offset = targetBeat - clipboardStartBeat;
         
         foreach (var copiedEntry in clipboard)
@@ -834,7 +928,7 @@ public class BeatMapEditorWindow : EditorWindow
             }
         }
         
-        beatMapData.beatDataEntries = list.ToArray();
+        SetCurrentBeatData(list.ToArray());
         EditorUtility.SetDirty(beatMapData);
         
         Debug.Log($"Pasted {clipboard.Count} notes at beat {targetBeat}");
@@ -843,14 +937,72 @@ public class BeatMapEditorWindow : EditorWindow
     
     private void SelectAllNotes()
     {
+        BeatDataEntry[] currentBeatData = GetCurrentBeatData();
         selectedNotes.Clear();
-        for (int i = 0; i < beatMapData.beatDataEntries.Length; i++)
+        for (int i = 0; i < currentBeatData.Length; i++)
         {
             selectedNotes.Add(i);
         }
         Debug.Log($"Selected all {selectedNotes.Count} notes");
         Repaint();
     }
+    
+    private void CopyCurrentDifficulty()
+    {
+        int difficultyIndex = (int)selectedDifficulty;
+        if (beatMapData == null || beatMapData.difficultyBeatMaps == null || difficultyIndex >= beatMapData.difficultyBeatMaps.Length)
+        {
+            Debug.LogWarning("Invalid difficulty to copy");
+            return;
+        }
+        
+        difficultyClipboard = beatMapData.difficultyBeatMaps[difficultyIndex].beatDataEntries;
+        copiedDifficulty = (Difficulty)difficultyIndex;
+        
+        Debug.Log($"Copied difficulty {copiedDifficulty}");
+    }
+    
+    private void PasteDifficulty()
+    {
+        if (difficultyClipboard == null || difficultyClipboard.Length == 0)
+        {
+            Debug.Log("No difficulty data in clipboard");
+            return;
+        }
+        
+        int difficultyIndex = (int)selectedDifficulty;
+        if (beatMapData == null || beatMapData.difficultyBeatMaps == null || difficultyIndex >= beatMapData.difficultyBeatMaps.Length)
+        {
+            Debug.LogWarning("Invalid difficulty to paste");
+            return;
+        }
+        
+        // Clear existing notes in the target difficulty
+        SetCurrentBeatData(new BeatDataEntry[0]);
+        
+        // Paste copied notes
+        SetCurrentBeatData(difficultyClipboard);
+        EditorUtility.SetDirty(beatMapData);
+        
+        Debug.Log($"Pasted difficulty {copiedDifficulty}");
+        Repaint();
+    }
+    
+    private void ClearCurrentDifficulty()
+    {
+        int difficultyIndex = (int)selectedDifficulty;
+        if (beatMapData == null || beatMapData.difficultyBeatMaps == null || difficultyIndex >= beatMapData.difficultyBeatMaps.Length)
+        {
+            Debug.LogWarning("Invalid difficulty to clear");
+            return;
+        }
+        
+        // Clear existing notes in the target difficulty
+        SetCurrentBeatData(new BeatDataEntry[0]);
+        EditorUtility.SetDirty(beatMapData);
+        
+        Debug.Log($"Cleared difficulty {selectedDifficulty}");
+        Repaint();
+    }
 }
-
 

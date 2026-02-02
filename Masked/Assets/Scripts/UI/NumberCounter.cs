@@ -15,8 +15,12 @@ public class NumberCounter : MonoBehaviour
     public float countDuration = 1f;
     public Ease countEase = Ease.OutQuad;
     public string numberFormat = "N0"; // Standard numeric format (e.g., "N0" for integers, "F2" for 2 decimals)
+    public bool playTickSound = true; // Whether to play tick sound when counting
+    public float tickSoundInterval = 0.05f; // Minimum time between tick sounds to prevent audio spam
     
     private Tween currentTween;
+    private int lastDisplayedValue = -1; // Track last displayed value to only play sound on change
+    private float lastTickSoundTime = 0f; // Track time of last tick sound
     
     private void OnDestroy()
     {
@@ -55,13 +59,30 @@ public class NumberCounter : MonoBehaviour
         
         // Start from 0
         int currentValue = 0;
+        lastDisplayedValue = 0;
+        lastTickSoundTime = Time.unscaledTime;
         textField.text = FormatNumber(currentValue);
         
         // Animate to target
         currentTween = Tween.Custom(0f, 1f, duration, onValueChange: progress =>
         {
             currentValue = Mathf.RoundToInt(Mathf.Lerp(0, targetValue, progress));
-            textField.text = FormatNumber(currentValue);
+            
+            // Only update text and play sound if the value changed
+            if (currentValue != lastDisplayedValue)
+            {
+                textField.text = FormatNumber(currentValue);
+                
+                // Play tick sound if enabled and enough time has passed
+                if (playTickSound && SoundEffectManager.Instance != null && 
+                    Time.unscaledTime - lastTickSoundTime >= tickSoundInterval)
+                {
+                    SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.tickSound);
+                    lastTickSoundTime = Time.unscaledTime;
+                }
+                
+                lastDisplayedValue = currentValue;
+            }
         }, ease: countEase, useUnscaledTime: true).OnComplete(() =>
         {
             // Ensure we end exactly at target value

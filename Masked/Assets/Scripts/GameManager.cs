@@ -36,15 +36,15 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// Set the play data before starting a game session
     /// </summary>
-    public void SetPlayData(BeatMapData beatMap, float playSpeed, LogicOperation[] enabledOperations)
+    public void SetPlayData(BeatMapData beatMap, Difficulty difficulty, float playSpeed, LogicOperation[] enabledOperations)
     {
-        livePlayData = new LivePlayData(beatMap, playSpeed, enabledOperations, autoPlayEnabled, simpleModeEnabled);
+        livePlayData = new LivePlayData(beatMap, difficulty, playSpeed, enabledOperations, autoPlayEnabled, simpleModeEnabled);
         
         // Reset flags for new game instance
         isGameOverActive = false;
         isLevelCompleteActive = false;
         
-        Debug.Log($"Play data set for new game. AutoPlay: {autoPlayEnabled}, SimpleMode: {simpleModeEnabled}, Song: {beatMap.songTitle}");
+        Debug.Log($"Play data set for new game. Difficulty: {difficulty}, AutoPlay: {autoPlayEnabled}, SimpleMode: {simpleModeEnabled}, Song: {beatMap.songTitle}");
     }
     
     /// <summary>

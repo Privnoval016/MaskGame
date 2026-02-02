@@ -20,6 +20,6 @@ public class SoundEffectAtlas : ScriptableObject
     
     [Header("UI Sounds")]
     public SoundEffect uiSelect;
-
     public SoundEffect songBegin;
+    public SoundEffect tickSound; // Sound that plays when numbers tick up during score counting
 }

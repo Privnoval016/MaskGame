@@ -25,6 +25,18 @@ public class SongSelectMenu : MonoBehaviour
     public Toggle norToggle;
     public Toggle xnorToggle;
     
+    [Header("Difficulty Selection")]
+    public Button easyButton;
+    public Button mediumButton;
+    public Button hardButton;
+    public Button expertButton;
+    public Button superExpertButton;
+    public RectTransform difficultySelector; // The image that tweens to selected difficulty button
+    
+    [Header("Game Modifiers")]
+    public Button autoplayButton; // Toggle button for autoplay
+    public Toggle simpleModeToggle; // Toggle for simple mode
+    
     [Header("Layout Settings")]
     public float cardSpacing = 400f; // Distance between cards
     public float swipeThreshold = 50f; // Minimum swipe distance
@@ -49,6 +61,8 @@ public class SongSelectMenu : MonoBehaviour
     private bool isSelected = false;
     private SongCard selectedCard;
     private float currentPlaySpeed = 5f; // Current play speed value (1-10, increments of 0.5)
+    private Difficulty selectedDifficulty = Difficulty.Medium; // Currently selected difficulty
+    private bool autoplayEnabled = false; // Autoplay mode state
     
     // Drag/swipe handling
     private Vector3 dragStartPos;
@@ -63,6 +77,9 @@ public class SongSelectMenu : MonoBehaviour
         InitializeSongs();
         SetupUI();
         UpdateCardPositions(false);
+        
+        // Initialize difficulty selector position after UI is set up
+        UpdateDifficultySelector(false);
     }
     
     private void OnEnable()
@@ -261,6 +278,32 @@ public class SongSelectMenu : MonoBehaviour
             xnorToggle.isOn = true;
             xnorToggle.onValueChanged.AddListener((value) => OnOperationToggleChanged(xnorToggle));
         }
+        
+        // Setup difficulty buttons
+        if (easyButton != null)
+            easyButton.onClick.AddListener(() => OnDifficultySelected(Difficulty.Easy));
+        if (mediumButton != null)
+            mediumButton.onClick.AddListener(() => OnDifficultySelected(Difficulty.Medium));
+        if (hardButton != null)
+            hardButton.onClick.AddListener(() => OnDifficultySelected(Difficulty.Hard));
+        if (expertButton != null)
+            expertButton.onClick.AddListener(() => OnDifficultySelected(Difficulty.Expert));
+        if (superExpertButton != null)
+            superExpertButton.onClick.AddListener(() => OnDifficultySelected(Difficulty.SuperExpert));
+        
+        // Setup autoplay button
+        if (autoplayButton != null)
+        {
+            autoplayButton.onClick.AddListener(OnAutoplayToggled);
+            UpdateAutoplayButtonVisual();
+        }
+        
+        // Setup simple mode toggle
+        if (simpleModeToggle != null)
+        {
+            simpleModeToggle.isOn = false;
+            simpleModeToggle.onValueChanged.AddListener(OnSimpleModeToggled);
+        }
     }
     
     private void Update()
@@ -434,6 +477,9 @@ public class SongSelectMenu : MonoBehaviour
     
     private void AnimateToSelectedState()
     {
+        // Update difficulty button states based on what's playable for this song
+        UpdateDifficultyButtonStates();
+        
         // Move selected card to the left by the configured offset (keep its current scale)
         Vector3 selectedTargetPos = new Vector3(selectedCardOffsetX, selectedCard.transform.localPosition.y, 0);
         Tween.LocalPosition(selectedCard.transform, selectedTargetPos, transitionDuration, transitionEase);
@@ -558,6 +604,137 @@ public class SongSelectMenu : MonoBehaviour
         }
     }
     
+    private void OnDifficultySelected(Difficulty difficulty)
+    {
+        // Don't allow selecting unplayable difficulties
+        if (selectedCard != null && selectedCard.beatMapData != null)
+        {
+            if (!selectedCard.beatMapData.IsDifficultyPlayable(difficulty))
+            {
+                Debug.Log($"Difficulty {difficulty} is not playable for this song");
+                return;
+            }
+        }
+        
+        // Play UI select sound
+        if (SoundEffectManager.Instance != null)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.uiSelect);
+        }
+        
+        selectedDifficulty = difficulty;
+        UpdateDifficultySelector(true);
+        Debug.Log($"Difficulty selected: {difficulty}");
+    }
+    
+    private void UpdateDifficultyButtonStates()
+    {
+        if (selectedCard == null || selectedCard.beatMapData == null) return;
+        
+        UpdateDifficultyButton(easyButton, Difficulty.Easy);
+        UpdateDifficultyButton(mediumButton, Difficulty.Medium);
+        UpdateDifficultyButton(hardButton, Difficulty.Hard);
+        UpdateDifficultyButton(expertButton, Difficulty.Expert);
+        UpdateDifficultyButton(superExpertButton, Difficulty.SuperExpert);
+    }
+    
+    private void UpdateDifficultyButton(Button button, Difficulty difficulty)
+    {
+        if (button == null || selectedCard == null || selectedCard.beatMapData == null) return;
+        
+        bool isPlayable = selectedCard.beatMapData.IsDifficultyPlayable(difficulty);
+        button.interactable = isPlayable;
+        
+        // Gray out text for unplayable difficulties
+        var buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
+        if (buttonText != null)
+        {
+            buttonText.color = isPlayable ? Color.white : new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        }
+    }
+    
+    private void UpdateDifficultySelector(bool animate)
+    {
+        if (difficultySelector == null) return;
+        
+        Button targetButton = null;
+        switch (selectedDifficulty)
+        {
+            case Difficulty.Easy: targetButton = easyButton; break;
+            case Difficulty.Medium: targetButton = mediumButton; break;
+            case Difficulty.Hard: targetButton = hardButton; break;
+            case Difficulty.Expert: targetButton = expertButton; break;
+            case Difficulty.SuperExpert: targetButton = superExpertButton; break;
+        }
+        
+        if (targetButton != null)
+        {
+            Vector3 targetPos = targetButton.transform.position;
+            
+            if (animate)
+            {
+                Tween.Position(difficultySelector, targetPos, 0.3f, Ease.OutBack);
+            }
+            else
+            {
+                difficultySelector.position = targetPos;
+            }
+        }
+    }
+    
+    private void OnAutoplayToggled()
+    {
+        // Play UI select sound
+        if (SoundEffectManager.Instance != null)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.uiSelect);
+        }
+        
+        autoplayEnabled = !autoplayEnabled;
+        UpdateAutoplayButtonVisual();
+        Debug.Log($"Autoparser: {(autoplayEnabled ? "ON" : "OFF")}");
+    }
+    
+    private void UpdateAutoplayButtonVisual()
+    {
+        if (autoplayButton == null) return;
+        
+        // Update button text or color to show state
+        var buttonText = autoplayButton.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+        if (buttonText != null)
+        {
+            buttonText.text = autoplayEnabled ? "AUTO-PARSER:\nON" : "AUTO-PARSER:\nOFF";
+        }
+        
+        // Optional: Change button color
+        var buttonImage = autoplayButton.GetComponent<UnityEngine.UI.Image>();
+        if (buttonImage != null)
+        {
+            buttonImage.color = autoplayEnabled ? new Color(0.2f, 1f, 0.3f, 0.5f) : Color.white;
+        }
+    }
+    
+    private void OnSimpleModeToggled(bool isOn)
+    {
+        // Play UI select sound
+        if (SoundEffectManager.Instance != null)
+        {
+            SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.uiSelect);
+        }
+        
+        // When simple mode is on, disable logic operation toggles
+        bool togglesInteractable = !isOn;
+        
+        if (andToggle != null) andToggle.interactable = togglesInteractable;
+        if (orToggle != null) orToggle.interactable = togglesInteractable;
+        if (xorToggle != null) xorToggle.interactable = togglesInteractable;
+        if (nandToggle != null) nandToggle.interactable = togglesInteractable;
+        if (norToggle != null) norToggle.interactable = togglesInteractable;
+        if (xnorToggle != null) xnorToggle.interactable = togglesInteractable;
+        
+        Debug.Log($"Simple Mode: {(isOn ? "ON" : "OFF")} - Logic toggles {(togglesInteractable ? "enabled" : "disabled")}");
+    }
+    
     private LogicOperation[] GetEnabledOperations()
     {
         List<LogicOperation> enabled = new List<LogicOperation>();
@@ -585,9 +762,14 @@ public class SongSelectMenu : MonoBehaviour
         
         // Get settings
         LogicOperation[] enabledOps = GetEnabledOperations();
+        bool simpleMode = simpleModeToggle != null && simpleModeToggle.isOn;
         
-        // Set play data in GameManager
-        GameManager.Instance.SetPlayData(selectedCard.beatMapData, currentPlaySpeed, enabledOps);
+        // Set game modifiers in GameManager
+        GameManager.Instance.autoPlayEnabled = autoplayEnabled;
+        GameManager.Instance.simpleModeEnabled = simpleMode;
+        
+        // Set play data in GameManager with difficulty
+        GameManager.Instance.SetPlayData(selectedCard.beatMapData, selectedDifficulty, currentPlaySpeed, enabledOps);
         
         // Animate button press
         if (playButton != null)
@@ -596,7 +778,7 @@ public class SongSelectMenu : MonoBehaviour
         }
         
         // Load game scene
-        Debug.Log($"Starting game with: {selectedCard.beatMapData.songTitle}, Speed: {currentPlaySpeed}, Operations: {enabledOps.Length}");
+        Debug.Log($"Starting game with: {selectedCard.beatMapData.songTitle}, Difficulty: {selectedDifficulty}, Speed: {currentPlaySpeed}, Operations: {enabledOps.Length}, Autoplay: {autoplayEnabled}, SimpleMode: {simpleMode}");
         
         // Delay to allow button animation, then load scene
         Tween.Delay(playButtonDelaySeconds).OnComplete(() =>

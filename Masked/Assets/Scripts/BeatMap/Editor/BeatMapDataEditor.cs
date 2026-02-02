@@ -26,6 +26,9 @@ public class BeatMapDataEditor : Editor
         DrawSongDataSection();
         EditorGUILayout.Space(5);
         
+        DrawPlayableDifficultiesSection();
+        EditorGUILayout.Space(5);
+        
         DrawBeatDataSection();
         EditorGUILayout.Space(5);
         
@@ -48,17 +51,26 @@ public class BeatMapDataEditor : Editor
         EditorGUILayout.LabelField("BeatMap Editor", titleStyle);
         EditorGUILayout.Space(5);
         
-        // Quick stats
+        // Quick stats - sum all difficulties
         GUIStyle statsStyle = new GUIStyle(EditorStyles.miniLabel);
         statsStyle.alignment = TextAnchor.MiddleCenter;
         statsStyle.normal.textColor = new Color(0.7f, 0.7f, 0.7f);
         
-        int noteCount = beatMap.beatDataEntries?.Length ?? 0;
+        int totalNotes = 0;
+        if (beatMap.difficultyBeatMaps != null)
+        {
+            foreach (var diffMap in beatMap.difficultyBeatMaps)
+            {
+                if (diffMap.beatDataEntries != null)
+                    totalNotes += diffMap.beatDataEntries.Length;
+            }
+        }
+        
         int checkpointCount = beatMap.checkpoints?.Length ?? 0;
         float duration = beatMap.bpm > 0 ? (beatMap.beats / (float)beatMap.bpm) * 60f : 0f;
         
         EditorGUILayout.LabelField(
-            $"{noteCount} Notes | {checkpointCount} Checkpoints | {duration:F1}s Duration", 
+            $"{totalNotes} Total Notes | {checkpointCount} Checkpoints | {duration:F1}s Duration", 
             statsStyle
         );
         
@@ -173,12 +185,88 @@ public class BeatMapDataEditor : Editor
         EditorGUILayout.EndVertical();
     }
     
+    private void DrawPlayableDifficultiesSection()
+    {
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        
+        EditorGUILayout.LabelField("Playable Difficulties", EditorStyles.boldLabel);
+        EditorGUILayout.Space(3);
+        
+        EditorGUILayout.HelpBox("Check which difficulties are ready to be played in the menu. Unchecked difficulties will be grayed out and unselectable.", MessageType.Info);
+        EditorGUILayout.Space(5);
+        
+        // Get serialized properties
+        SerializedProperty easyPlayableProp = serializedObject.FindProperty("easyPlayable");
+        SerializedProperty mediumPlayableProp = serializedObject.FindProperty("mediumPlayable");
+        SerializedProperty hardPlayableProp = serializedObject.FindProperty("hardPlayable");
+        SerializedProperty expertPlayableProp = serializedObject.FindProperty("expertPlayable");
+        SerializedProperty superExpertPlayableProp = serializedObject.FindProperty("superExpertPlayable");
+        
+        // Draw checkboxes with color-coded labels
+        DrawDifficultyCheckbox(easyPlayableProp, "Easy", GetDifficultyColor(Difficulty.Easy));
+        DrawDifficultyCheckbox(mediumPlayableProp, "Medium", GetDifficultyColor(Difficulty.Medium));
+        DrawDifficultyCheckbox(hardPlayableProp, "Hard", GetDifficultyColor(Difficulty.Hard));
+        DrawDifficultyCheckbox(expertPlayableProp, "Expert", GetDifficultyColor(Difficulty.Expert));
+        DrawDifficultyCheckbox(superExpertPlayableProp, "Super Expert", GetDifficultyColor(Difficulty.SuperExpert));
+        
+        EditorGUILayout.EndVertical();
+    }
+    
+    private void DrawDifficultyCheckbox(SerializedProperty prop, string label, Color color)
+    {
+        EditorGUILayout.BeginHorizontal();
+        
+        // Checkbox
+        prop.boolValue = EditorGUILayout.Toggle(prop.boolValue, GUILayout.Width(20));
+        
+        // Colored label
+        GUIStyle labelStyle = new GUIStyle(EditorStyles.label);
+        labelStyle.normal.textColor = color;
+        labelStyle.fontStyle = FontStyle.Bold;
+        
+        EditorGUILayout.LabelField(label, labelStyle);
+        
+        // Show note count for this difficulty
+        int difficultyIndex = GetDifficultyIndex(label);
+        if (difficultyIndex >= 0 && beatMap.difficultyBeatMaps != null && difficultyIndex < beatMap.difficultyBeatMaps.Length)
+        {
+            int noteCount = beatMap.difficultyBeatMaps[difficultyIndex].beatDataEntries?.Length ?? 0;
+            EditorGUILayout.LabelField($"({noteCount} notes)", EditorStyles.miniLabel, GUILayout.Width(80));
+        }
+        
+        EditorGUILayout.EndHorizontal();
+    }
+    
+    private int GetDifficultyIndex(string label)
+    {
+        switch (label)
+        {
+            case "Easy": return 0;
+            case "Medium": return 1;
+            case "Hard": return 2;
+            case "Expert": return 3;
+            case "Super Expert": return 4;
+            default: return -1;
+        }
+    }
+    
     private void DrawBeatDataSection()
     {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         
         EditorGUILayout.BeginHorizontal();
-        showBeatData = EditorGUILayout.Foldout(showBeatData, $"Beat Data ({beatMap.beatDataEntries?.Length ?? 0} notes)", true, EditorStyles.foldoutHeader);
+        
+        int totalNotes = 0;
+        if (beatMap.difficultyBeatMaps != null)
+        {
+            foreach (var diffMap in beatMap.difficultyBeatMaps)
+            {
+                if (diffMap.beatDataEntries != null)
+                    totalNotes += diffMap.beatDataEntries.Length;
+            }
+        }
+        
+        showBeatData = EditorGUILayout.Foldout(showBeatData, $"Beat Data by Difficulty ({totalNotes} total notes)", true, EditorStyles.foldoutHeader);
         
         GUILayout.FlexibleSpace();
         
@@ -193,90 +281,49 @@ public class BeatMapDataEditor : Editor
         {
             EditorGUILayout.Space(5);
             
-            if (beatMap.beatDataEntries == null || beatMap.beatDataEntries.Length == 0)
+            if (beatMap.difficultyBeatMaps == null || beatMap.difficultyBeatMaps.Length == 0)
             {
-                EditorGUILayout.HelpBox("No notes yet. Open the BeatMap Editor to start adding notes!", MessageType.Info);
+                EditorGUILayout.HelpBox("No difficulty beatmaps initialized. Open the BeatMap Editor to start adding notes!", MessageType.Info);
             }
             else
             {
-                // Show note distribution by lane
-                var laneGroups = beatMap.beatDataEntries.GroupBy(e => e.laneIndex).OrderBy(g => g.Key);
-                
-                EditorGUILayout.LabelField("Notes per Lane:", EditorStyles.miniLabel);
-                EditorGUILayout.BeginHorizontal();
-                
-                foreach (var group in laneGroups)
+                // Show each difficulty with note count
+                for (int i = 0; i < beatMap.difficultyBeatMaps.Length && i < 5; i++)
                 {
-                    EditorGUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Width(60));
-                    EditorGUILayout.LabelField($"Lane {group.Key}", EditorStyles.centeredGreyMiniLabel);
-                    EditorGUILayout.LabelField($"{group.Count()}", EditorStyles.boldLabel);
-                    EditorGUILayout.EndVertical();
-                    GUILayout.Space(5);
-                }
-                
-                EditorGUILayout.EndHorizontal();
-                
-                EditorGUILayout.Space(5);
-                
-                // Show detailed list (limited)
-                EditorGUILayout.LabelField("Recent Notes:", EditorStyles.miniLabel);
-                beatDataScrollPos = EditorGUILayout.BeginScrollView(beatDataScrollPos, GUILayout.Height(150));
-                
-                var sortedEntries = beatMap.beatDataEntries.OrderByDescending(e => e.beatStamp).Take(20);
-                
-                foreach (var entry in sortedEntries)
-                {
+                    var diffMap = beatMap.difficultyBeatMaps[i];
+                    int noteCount = diffMap.beatDataEntries?.Length ?? 0;
+                    
                     EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                    EditorGUILayout.LabelField($"Beat {entry.beatStamp:F2}", GUILayout.Width(100));
-                    EditorGUILayout.LabelField($"Lane {entry.laneIndex}", GUILayout.Width(60));
                     
-                    // Color code truth value
-                    GUIStyle truthStyle = new GUIStyle(EditorStyles.miniLabel);
-                    truthStyle.normal.textColor = entry.truthValue == TruthValue.False ? new Color(1f, 0.3f, 0.3f) :
-                                                   entry.truthValue == TruthValue.True ? new Color(0.3f, 1f, 0.3f) :
-                                                   new Color(0.3f, 0.8f, 1f);
+                    // Difficulty name with color coding
+                    GUIStyle diffStyle = new GUIStyle(EditorStyles.boldLabel);
+                    diffStyle.normal.textColor = GetDifficultyColor((Difficulty)i);
                     
-                    EditorGUILayout.LabelField($"Value: {entry.truthValue}", truthStyle, GUILayout.Width(100));
+                    EditorGUILayout.LabelField(((Difficulty)i).ToString(), diffStyle, GUILayout.Width(100));
+                    EditorGUILayout.LabelField($"{noteCount} notes", EditorStyles.miniLabel);
                     
                     EditorGUILayout.EndHorizontal();
-                }
-                
-                EditorGUILayout.EndScrollView();
-                
-                if (beatMap.beatDataEntries.Length > 20)
-                {
-                    EditorGUILayout.LabelField($"... and {beatMap.beatDataEntries.Length - 20} more", EditorStyles.miniLabel);
                 }
             }
             
             EditorGUILayout.Space(5);
-            
-            EditorGUILayout.BeginHorizontal();
-            
-            if (GUILayout.Button("Clear All Notes"))
-            {
-                if (EditorUtility.DisplayDialog("Clear All Notes", 
-                    "Are you sure you want to delete all notes? This cannot be undone.", 
-                    "Delete", "Cancel"))
-                {
-                    beatMap.beatDataEntries = new BeatDataEntry[0];
-                    EditorUtility.SetDirty(beatMap);
-                }
-            }
-            
-            if (GUILayout.Button("Sort by Beat"))
-            {
-                if (beatMap.beatDataEntries != null)
-                {
-                    System.Array.Sort(beatMap.beatDataEntries, (a, b) => a.beatStamp.CompareTo(b.beatStamp));
-                    EditorUtility.SetDirty(beatMap);
-                }
-            }
-            
-            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.HelpBox("Use the BeatMap Editor window to add and edit notes for each difficulty.", MessageType.Info);
         }
         
         EditorGUILayout.EndVertical();
+    }
+    
+    private Color GetDifficultyColor(Difficulty difficulty)
+    {
+        switch (difficulty)
+        {
+            case Difficulty.Easy: return new Color(0.3f, 1f, 0.3f); // Green
+            case Difficulty.Medium: return new Color(0.3f, 0.8f, 1f); // Blue
+            case Difficulty.Hard: return new Color(1f, 0.8f, 0.2f); // Yellow
+            case Difficulty.Expert: return new Color(1f, 0.5f, 0.2f); // Orange
+            case Difficulty.SuperExpert: return new Color(1f, 0.3f, 0.3f); // Red
+            default: return Color.white;
+        }
     }
     
     private void DrawCheckpointsSection()
