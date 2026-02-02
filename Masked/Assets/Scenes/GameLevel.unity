@@ -6775,6 +6775,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1200053221}
   - component: {fileID: 1200053222}
+  - component: {fileID: 1200053223}
   m_Layer: 0
   m_Name: PlayerInput
   m_TagString: Untagged
@@ -6809,6 +6810,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcc55d3273a84bbebc8ddcb570225eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1200053223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200053220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e8f9a2b3c4d5e6f7a8b9c0d1e2f3a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scoreManager: {fileID: 665783796}
+  perfectScoreProfile: {fileID: 11400000, guid: 2ee85bd9e05a74c6388bd24d6ef393d9, type: 2}
+  enableAutoPlayer: 0
 --- !u!1 &1218799514
 GameObject:
   m_ObjectHideFlags: 0
@@ -11081,6 +11097,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3188354907574955718, guid: 4b2ce02e28cb840dc88b3a9a8baf9165, type: 3}
+      propertyPath: autoPlayEnabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3188354907574955718, guid: 4b2ce02e28cb840dc88b3a9a8baf9165, type: 3}
+      propertyPath: simpleModeEnabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3188354907574955718, guid: 4b2ce02e28cb840dc88b3a9a8baf9165, type: 3}
+      propertyPath: livePlayData.autoPlayEnabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3188354907574955718, guid: 4b2ce02e28cb840dc88b3a9a8baf9165, type: 3}
+      propertyPath: livePlayData.simpleModeEnabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3468343550784373920, guid: 4b2ce02e28cb840dc88b3a9a8baf9165, type: 3}
       propertyPath: m_Name
       value: GameManager

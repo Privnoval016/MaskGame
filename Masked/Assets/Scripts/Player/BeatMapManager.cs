@@ -35,7 +35,7 @@ public class BeatMapManager : Singleton<BeatMapManager>
     public Dictionary<LogicOperation, LogicSplitter> logicSplitters = new Dictionary<LogicOperation, LogicSplitter>();
     
     // store all active logic notes so we can check for hits by the player and deal with score accordingly
-    private readonly HashSet<LogicNote> activeLogicNotes = new HashSet<LogicNote>();
+    public readonly HashSet<LogicNote> activeLogicNotes = new HashSet<LogicNote>();
     
     [HideInInspector] public MaterialColorShifter materialColorShifter;
     
@@ -151,9 +151,24 @@ public class BeatMapManager : Singleton<BeatMapManager>
             return;
         }
         
-        // Check to see if the direction of the button pressed matches the evaluated logic operation
-        LogicSplitter splitter = GetLogicSplitter(activeLogicOperation);
-        int expectedTruthValue = splitter.EvaluateTruthValue(notesOnBeat.Select(n => n.truthValue).ToArray()) ? 1 : -1;
+        // Check if simple mode is enabled
+        bool simpleModeEnabled = GameManager.Instance?.livePlayData?.simpleModeEnabled ?? false;
+        
+        int expectedTruthValue;
+        
+        if (simpleModeEnabled)
+        {
+            // In simple mode, notes pass through directly - just check the real truth value
+            // Since all notes in simple mode have the same value, we can just check the first one
+            expectedTruthValue = notesOnBeat[0].realTruthValue == 1 ? 1 : -1;
+        }
+        else
+        {
+            // Normal mode - use logic gate evaluation
+            LogicSplitter splitter = GetLogicSplitter(activeLogicOperation);
+            expectedTruthValue = splitter.EvaluateTruthValue(notesOnBeat.Select(n => n.truthValue).ToArray()) ? 1 : -1;
+        }
+        
         int buttonTruthValue = Mathf.RoundToInt(e.direction.y); // Up is 1, Down is -1
         
         if (expectedTruthValue == buttonTruthValue)
@@ -198,8 +213,17 @@ public class BeatMapManager : Singleton<BeatMapManager>
     {
         LogicOperation previousOperation = activeLogicOperation;
         
+        // Check if simple mode is enabled
+        bool simpleModeEnabled = GameManager.Instance?.livePlayData?.simpleModeEnabled ?? false;
+        
         // Get enabled operations from LivePlayData (player selection)
         LogicOperation[] allowedOps = GameManager.Instance?.livePlayData?.enabledOperations;
+        
+        // In simple mode, enable all logic gates for visual variety
+        if (simpleModeEnabled)
+        {
+            allowedOps = (LogicOperation[])Enum.GetValues(typeof(LogicOperation));
+        }
         
         // Fallback to all operations if LivePlayData not set
         if (allowedOps == null || allowedOps.Length == 0)

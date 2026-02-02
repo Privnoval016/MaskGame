@@ -52,18 +52,38 @@ public class BeatSplitter : MonoBehaviour
     
     private int[] GetNoteSpawnIndicesForBeat(int truthValue)
     {
-        LogicSplitter splitter = BeatMapManager.Instance.GetLogicSplitter(BeatMapManager.Instance.activeLogicOperation);
-        var oneLocations = splitter.GetNotesForBeat(truthValue);
+        // Check if simple mode is enabled
+        bool simpleModeEnabled = GameManager.Instance?.livePlayData?.simpleModeEnabled ?? false;
         
-        int[] allIndices = new int[BeatMapManager.Instance.numberOfSpawnLocations];
-        
-        for (int i = 0; i < oneLocations.Length; i++)
+        if (simpleModeEnabled)
         {
-            if (oneLocations[i] == 1) // set spawn index to 1 if we need to spawn a note there
-                allIndices[i] = 1;
+            // In simple mode, both spawn locations get the same truth value
+            // This makes the note pass through directly (if input is 1, both notes are 1; if input is 0, both notes are 0)
+            int[] allIndices = new int[BeatMapManager.Instance.numberOfSpawnLocations];
+            
+            for (int i = 0; i < allIndices.Length; i++)
+            {
+                allIndices[i] = truthValue; // Set all spawn locations to the same value
+            }
+            
+            return allIndices;
         }
-        
-        return allIndices; // returns an array where each index corresponds to a spawn location, with 1 indicating a note should be spawned there
+        else
+        {
+            // Normal mode - use logic splitter
+            LogicSplitter splitter = BeatMapManager.Instance.GetLogicSplitter(BeatMapManager.Instance.activeLogicOperation);
+            var oneLocations = splitter.GetNotesForBeat(truthValue);
+            
+            int[] allIndices = new int[BeatMapManager.Instance.numberOfSpawnLocations];
+            
+            for (int i = 0; i < oneLocations.Length; i++)
+            {
+                if (oneLocations[i] == 1) // set spawn index to 1 if we need to spawn a note there
+                    allIndices[i] = 1;
+            }
+            
+            return allIndices; // returns an array where each index corresponds to a spawn location, with 1 indicating a note should be spawned there
+        }
     }
     
     #region Note Spawning

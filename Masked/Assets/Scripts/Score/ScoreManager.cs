@@ -75,7 +75,7 @@ public class ScoreManager : MonoBehaviour
         
         if (e.isCorrect == true)
         {
-            totalScore += profile.correctScoreIncrease;
+            totalScore += profile.correctScoreIncrease * comboMultiplier;
             allCombo++;
             correctCombo++;
             
@@ -85,7 +85,7 @@ public class ScoreManager : MonoBehaviour
         }
         else if (e.isCorrect == false)
         {
-            totalScore += profile.incorrectScoreIncrease;
+            totalScore += profile.incorrectScoreIncrease * comboMultiplier;
             allCombo++;
             correctCombo = 0; // reset correct combo on incorrect hit
             

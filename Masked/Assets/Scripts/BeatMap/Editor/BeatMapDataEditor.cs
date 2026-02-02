@@ -229,6 +229,15 @@ public class BeatMapDataEditor : Editor
                     EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
                     EditorGUILayout.LabelField($"Beat {entry.beatStamp:F2}", GUILayout.Width(100));
                     EditorGUILayout.LabelField($"Lane {entry.laneIndex}", GUILayout.Width(60));
+                    
+                    // Color code truth value
+                    GUIStyle truthStyle = new GUIStyle(EditorStyles.miniLabel);
+                    truthStyle.normal.textColor = entry.truthValue == TruthValue.False ? new Color(1f, 0.3f, 0.3f) :
+                                                   entry.truthValue == TruthValue.True ? new Color(0.3f, 1f, 0.3f) :
+                                                   new Color(0.3f, 0.8f, 1f);
+                    
+                    EditorGUILayout.LabelField($"Value: {entry.truthValue}", truthStyle, GUILayout.Width(100));
+                    
                     EditorGUILayout.EndHorizontal();
                 }
                 

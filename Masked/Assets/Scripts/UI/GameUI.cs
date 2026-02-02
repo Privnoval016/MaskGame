@@ -217,7 +217,9 @@ public class GameUI : MonoBehaviour
     {
         foreach (var img in operatorImages)
         {
-            img.text = BeatMapManager.Instance.materialColorShifter.GetCurrentLogicData().displayName;
+            img.text = !GameManager.Instance.livePlayData.simpleModeEnabled
+                ? BeatMapManager.Instance.materialColorShifter.GetCurrentLogicData().displayName
+                : "?!";
             
             if (animate)
             {

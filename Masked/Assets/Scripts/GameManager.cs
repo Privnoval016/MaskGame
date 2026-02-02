@@ -10,6 +10,13 @@ public class GameManager : Singleton<GameManager>
     [Header("Current Play Session")]
     public LivePlayData livePlayData;
     
+    [Header("Gameplay Modifiers")]
+    [Tooltip("If enabled, AutoPlayer will hit all notes perfectly")]
+    public bool autoPlayEnabled;
+    
+    [Tooltip("If enabled, removes logic gate mechanics - notes pass through directly")]
+    public bool simpleModeEnabled;
+    
     [Header("Game Over Settings")]
     public float gameOverSlowdownDuration = 1.5f; // Time to slow down to 0
     public float gameOverHoldDuration = 2f; // How long to show game over before returning to menu
@@ -31,13 +38,13 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void SetPlayData(BeatMapData beatMap, float playSpeed, LogicOperation[] enabledOperations)
     {
-        livePlayData = new LivePlayData(beatMap, playSpeed, enabledOperations);
+        livePlayData = new LivePlayData(beatMap, playSpeed, enabledOperations, autoPlayEnabled, simpleModeEnabled);
         
         // Reset flags for new game instance
         isGameOverActive = false;
         isLevelCompleteActive = false;
         
-        Debug.Log($"Play data set for new game. Flags reset. Song: {beatMap.songTitle}");
+        Debug.Log($"Play data set for new game. AutoPlay: {autoPlayEnabled}, SimpleMode: {simpleModeEnabled}, Song: {beatMap.songTitle}");
     }
     
     /// <summary>
@@ -58,7 +65,7 @@ public class GameManager : Singleton<GameManager>
         LevelEndManager levelEndManager = LevelEndManager.Instance;
         
         // Disable player input immediately
-        PlayerInputDetector inputDetector = FindObjectOfType<PlayerInputDetector>();
+        PlayerInputDetector inputDetector = PlayerInputDetector.Instance;
         if (inputDetector != null)
         {
             inputDetector.DisableInput();
@@ -73,7 +80,7 @@ public class GameManager : Singleton<GameManager>
         }
         
         // Slow down music with pitch effect
-        MusicManager musicManager = FindObjectOfType<MusicManager>();
+        MusicManager musicManager = MusicManager.Instance;
         if (musicManager != null)
         {
             musicManager.SlowDownMusic(gameOverSlowdownDuration, targetPitch: 0f);

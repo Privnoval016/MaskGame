@@ -1,12 +1,14 @@
+using Extensions.Patterns;
 using UnityEngine;
 using PrimeTween;
 
-public class MusicManager : MonoBehaviour
+public class MusicManager : Singleton<MusicManager>
 {
     public AudioSource audioSource;
     
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         if (audioSource == null)
         {
             audioSource = GetComponent<AudioSource>();

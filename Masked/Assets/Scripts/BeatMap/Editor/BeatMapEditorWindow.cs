@@ -27,6 +27,13 @@ public class BeatMapEditorWindow : EditorWindow
     
     // Selection
     private HashSet<int> selectedNotes = new HashSet<int>();
+    private bool isDraggingSelection = false;
+    private Vector2 selectionStartPos;
+    private Vector2 selectionEndPos;
+    
+    // Clipboard for copy-paste
+    private List<BeatDataEntry> clipboard = new List<BeatDataEntry>();
+    private float clipboardStartBeat; // Used to maintain relative positioning when pasting
     
     // Tool mode
     private enum ToolMode { Place, Erase, Select }
@@ -556,6 +563,27 @@ public class BeatMapEditorWindow : EditorWindow
                     e.Use();
                 }
             }
+            else if ((e.modifiers & EventModifiers.Control) != 0 && e.keyCode == KeyCode.C)
+            {
+                CopySelectedNotes();
+                e.Use();
+            }
+            else if ((e.modifiers & EventModifiers.Control) != 0 && e.keyCode == KeyCode.V)
+            {
+                PasteNotes(currentBeat);
+                e.Use();
+            }
+            else if ((e.modifiers & EventModifiers.Control) != 0 && e.keyCode == KeyCode.A)
+            {
+                SelectAllNotes();
+                e.Use();
+            }
+            else if (e.keyCode == KeyCode.Escape)
+            {
+                selectedNotes.Clear();
+                Repaint();
+                e.Use();
+            }
         }
     }
 
@@ -740,6 +768,88 @@ public class BeatMapEditorWindow : EditorWindow
             beatMapData = newBeatMap;
             OnBeatMapChanged();
         }
+    }
+    
+    private void CopySelectedNotes()
+    {
+        if (selectedNotes.Count == 0)
+        {
+            Debug.Log("No notes selected to copy");
+            return;
+        }
+        
+        clipboard.Clear();
+        
+        float minBeat = float.MaxValue;
+        foreach (int index in selectedNotes)
+        {
+            if (index >= 0 && index < beatMapData.beatDataEntries.Length)
+            {
+                BeatDataEntry entry = beatMapData.beatDataEntries[index];
+                clipboard.Add(new BeatDataEntry 
+                { 
+                    beatStamp = entry.beatStamp, 
+                    laneIndex = entry.laneIndex,
+                    truthValue = entry.truthValue
+                });
+                
+                if (entry.beatStamp < minBeat)
+                    minBeat = entry.beatStamp;
+            }
+        }
+        
+        clipboardStartBeat = minBeat;
+        Debug.Log($"Copied {clipboard.Count} notes starting at beat {clipboardStartBeat}");
+    }
+    
+    private void PasteNotes(float targetBeat)
+    {
+        if (clipboard.Count == 0)
+        {
+            Debug.Log("Clipboard is empty");
+            return;
+        }
+        
+        var list = beatMapData.beatDataEntries.ToList();
+        float offset = targetBeat - clipboardStartBeat;
+        
+        foreach (var copiedEntry in clipboard)
+        {
+            float newBeat = copiedEntry.beatStamp + offset;
+            
+            // Check if note already exists at this position
+            bool exists = list.Any(e => 
+                Mathf.Abs(e.beatStamp - newBeat) < 0.01f && 
+                e.laneIndex == copiedEntry.laneIndex
+            );
+            
+            if (!exists)
+            {
+                list.Add(new BeatDataEntry 
+                { 
+                    beatStamp = newBeat, 
+                    laneIndex = copiedEntry.laneIndex,
+                    truthValue = copiedEntry.truthValue
+                });
+            }
+        }
+        
+        beatMapData.beatDataEntries = list.ToArray();
+        EditorUtility.SetDirty(beatMapData);
+        
+        Debug.Log($"Pasted {clipboard.Count} notes at beat {targetBeat}");
+        Repaint();
+    }
+    
+    private void SelectAllNotes()
+    {
+        selectedNotes.Clear();
+        for (int i = 0; i < beatMapData.beatDataEntries.Length; i++)
+        {
+            selectedNotes.Add(i);
+        }
+        Debug.Log($"Selected all {selectedNotes.Count} notes");
+        Repaint();
     }
 }
 

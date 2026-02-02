@@ -1,15 +1,17 @@
 using System;
 using Extensions.EventBus;
+using Extensions.Patterns;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
+public class PlayerInputDetector : Singleton<PlayerInputDetector>, PlayerInput.IPlayingActions
 {
     private PlayerInput playerInput;
     private bool inputEnabled = true;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         playerInput = new PlayerInput();
         playerInput.Playing.SetCallbacks(this);
     }
@@ -53,9 +55,15 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
         if (context.performed)
         {
             Vector2 direction = context.ReadValue<Vector2>();
-            EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(0, direction));
             
+            // Always play sound effect
             SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.buttonHit);
+            
+            // Only raise event if autoplay is not enabled
+            if (GameManager.Instance?.livePlayData?.autoPlayEnabled != true)
+            {
+                EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(0, direction));
+            }
         }
     }
     
@@ -66,9 +74,15 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
         if (context.performed)
         {
             Vector2 direction = context.ReadValue<Vector2>();
-            EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(1, direction));
             
+            // Always play sound effect
             SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.buttonHit);
+            
+            // Only raise event if autoplay is not enabled
+            if (GameManager.Instance?.livePlayData?.autoPlayEnabled != true)
+            {
+                EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(1, direction));
+            }
         }
     }
     
@@ -79,9 +93,15 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
         if (context.performed)
         {
             Vector2 direction = context.ReadValue<Vector2>();
-            EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(2, direction));
             
+            // Always play sound effect
             SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.buttonHit);
+            
+            // Only raise event if autoplay is not enabled
+            if (GameManager.Instance?.livePlayData?.autoPlayEnabled != true)
+            {
+                EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(2, direction));
+            }
         }
     }
     
@@ -92,9 +112,15 @@ public class PlayerInputDetector : MonoBehaviour, PlayerInput.IPlayingActions
         if (context.performed)
         {
             Vector2 direction = context.ReadValue<Vector2>();
-            EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(3, direction));
             
+            // Always play sound effect
             SoundEffectManager.Instance.Play(SoundEffectManager.Instance.soundEffectAtlas.buttonHit);
+            
+            // Only raise event if autoplay is not enabled
+            if (GameManager.Instance?.livePlayData?.autoPlayEnabled != true)
+            {
+                EventBus<ButtonPressedEvent>.Raise(new ButtonPressedEvent(3, direction));
+            }
         }
     }
 
