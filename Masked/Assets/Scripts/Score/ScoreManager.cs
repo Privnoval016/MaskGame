@@ -58,7 +58,7 @@ public class ScoreManager : MonoBehaviour
 
         if (e.isCorrect == true)
         {
-            SoundEffectManager.Instance.Play(e.actualValue == 1 ? SoundEffectManager.Instance.soundEffectAtlas.correctHitOne : 
+            SoundEffectManager.Instance.Play(e.hitNote.realTruthValue == 1 ? SoundEffectManager.Instance.soundEffectAtlas.correctHitOne : 
                 SoundEffectManager.Instance.soundEffectAtlas.correctHitZero);
         }
         else if (e.isCorrect == false)
