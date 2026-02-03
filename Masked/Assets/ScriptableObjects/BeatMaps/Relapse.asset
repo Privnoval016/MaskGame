@@ -16,7 +16,7 @@ MonoBehaviour:
   author: Privnoval016
   coverArt: {fileID: 21300000, guid: ff2724ef563e04f85873ec1e82c6ca01, type: 3}
   bpm: 172
-  beats: 252
+  beats: 256
   clip: {fileID: 8300000, guid: 56bed3a63f6214ad9977d75593304286, type: 3}
   beatLineRate: 1
   superBeatLineRate: 4
@@ -64,10 +64,10 @@ MonoBehaviour:
       laneIndex: 0
       truthValue: 2
     - beatStamp: 16
-      laneIndex: 2
+      laneIndex: 0
       truthValue: 2
     - beatStamp: 16
-      laneIndex: 0
+      laneIndex: 2
       truthValue: 2
     - beatStamp: 18
       laneIndex: 0
@@ -196,10 +196,10 @@ MonoBehaviour:
       laneIndex: 2
       truthValue: 2
     - beatStamp: 80
-      laneIndex: 2
+      laneIndex: 1
       truthValue: 2
     - beatStamp: 80
-      laneIndex: 1
+      laneIndex: 2
       truthValue: 2
     - beatStamp: 84
       laneIndex: 3
@@ -325,10 +325,10 @@ MonoBehaviour:
       laneIndex: 1
       truthValue: 2
     - beatStamp: 132
-      laneIndex: 2
+      laneIndex: 3
       truthValue: 2
     - beatStamp: 132
-      laneIndex: 3
+      laneIndex: 2
       truthValue: 2
     - beatStamp: 133
       laneIndex: 2
@@ -511,10 +511,10 @@ MonoBehaviour:
       laneIndex: 1
       truthValue: 2
     - beatStamp: 192
-      laneIndex: 3
+      laneIndex: 0
       truthValue: 2
     - beatStamp: 192
-      laneIndex: 0
+      laneIndex: 3
       truthValue: 2
     - beatStamp: 193.5
       laneIndex: 1
@@ -553,10 +553,10 @@ MonoBehaviour:
       laneIndex: 1
       truthValue: 2
     - beatStamp: 204
-      laneIndex: 1
+      laneIndex: 2
       truthValue: 2
     - beatStamp: 204
-      laneIndex: 2
+      laneIndex: 1
       truthValue: 2
     - beatStamp: 205
       laneIndex: 0
@@ -640,10 +640,10 @@ MonoBehaviour:
       laneIndex: 1
       truthValue: 2
     - beatStamp: 222
-      laneIndex: 3
+      laneIndex: 0
       truthValue: 2
     - beatStamp: 222
-      laneIndex: 0
+      laneIndex: 3
       truthValue: 2
     - beatStamp: 223
       laneIndex: 0
@@ -2937,10 +2937,10 @@ MonoBehaviour:
       laneIndex: 2
       truthValue: 2
     - beatStamp: 40
-      laneIndex: 0
+      laneIndex: 2
       truthValue: 2
     - beatStamp: 40
-      laneIndex: 2
+      laneIndex: 0
       truthValue: 2
     - beatStamp: 42
       laneIndex: 3
@@ -3033,16 +3033,16 @@ MonoBehaviour:
       laneIndex: 3
       truthValue: 2
     - beatStamp: 86
-      laneIndex: 2
+      laneIndex: 1
       truthValue: 2
     - beatStamp: 86
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 88
       laneIndex: 2
       truthValue: 2
     - beatStamp: 88
       laneIndex: 1
+      truthValue: 2
+    - beatStamp: 88
+      laneIndex: 2
       truthValue: 2
     - beatStamp: 89
       laneIndex: 3
@@ -3150,10 +3150,10 @@ MonoBehaviour:
       laneIndex: 1
       truthValue: 2
     - beatStamp: 132
-      laneIndex: 3
+      laneIndex: 2
       truthValue: 2
     - beatStamp: 132
-      laneIndex: 2
+      laneIndex: 3
       truthValue: 2
     - beatStamp: 133
       laneIndex: 2
@@ -3174,53 +3174,176 @@ MonoBehaviour:
       laneIndex: 2
       truthValue: 2
     - beatStamp: 140
-      laneIndex: 3
+      laneIndex: 0
       truthValue: 2
     - beatStamp: 140
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 142
-      laneIndex: 0
+      laneIndex: 3
       truthValue: 2
     - beatStamp: 142
       laneIndex: 3
+      truthValue: 2
+    - beatStamp: 142
+      laneIndex: 0
       truthValue: 2
     - beatStamp: 144
       laneIndex: 0
-      truthValue: 2
+      truthValue: 1
     - beatStamp: 145
       laneIndex: 0
-      truthValue: 2
-    - beatStamp: 146
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 147
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 148
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 149
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 150
-      laneIndex: 1
-      truthValue: 2
+      truthValue: 0
     - beatStamp: 152
       laneIndex: 3
-      truthValue: 2
+      truthValue: 1
     - beatStamp: 152
       laneIndex: 2
-      truthValue: 2
-    - beatStamp: 166
-      laneIndex: 3
-      truthValue: 2
-    - beatStamp: 188
+      truthValue: 1
+    - beatStamp: 158.5
+      laneIndex: 2
+      truthValue: 0
+    - beatStamp: 159
+      laneIndex: 1
+      truthValue: 0
+    - beatStamp: 159.5
+      laneIndex: 0
+      truthValue: 1
+    - beatStamp: 160.5
+      laneIndex: 2
+      truthValue: 0
+    - beatStamp: 161
+      laneIndex: 1
+      truthValue: 0
+    - beatStamp: 161.5
+      laneIndex: 0
+      truthValue: 1
+    - beatStamp: 162.5
       laneIndex: 3
       truthValue: 0
+    - beatStamp: 163.5
+      laneIndex: 2
+      truthValue: 1
+    - beatStamp: 164.5
+      laneIndex: 0
+      truthValue: 1
+    - beatStamp: 165
+      laneIndex: 1
+      truthValue: 1
+    - beatStamp: 165.5
+      laneIndex: 2
+      truthValue: 1
+    - beatStamp: 166
+      laneIndex: 3
+      truthValue: 1
+    - beatStamp: 166.5
+      laneIndex: 3
+      truthValue: 1
+    - beatStamp: 166.5
+      laneIndex: 0
+      truthValue: 0
+    - beatStamp: 167.5
+      laneIndex: 3
+      truthValue: 1
+    - beatStamp: 167.5
+      laneIndex: 0
+      truthValue: 0
+    - beatStamp: 168.5
+      laneIndex: 1
+      truthValue: 0
+    - beatStamp: 169.5
+      laneIndex: 2
+      truthValue: 0
+    - beatStamp: 170
+      laneIndex: 3
+      truthValue: 1
+    - beatStamp: 170
+      laneIndex: 0
+      truthValue: 1
+    - beatStamp: 171
+      laneIndex: 1
+      truthValue: 1
+    - beatStamp: 172
+      laneIndex: 3
+      truthValue: 0
+    - beatStamp: 173
+      laneIndex: 2
+      truthValue: 1
+    - beatStamp: 174
+      laneIndex: 1
+      truthValue: 1
+    - beatStamp: 174.5
+      laneIndex: 2
+      truthValue: 0
+    - beatStamp: 175
+      laneIndex: 1
+      truthValue: 0
+    - beatStamp: 175.5
+      laneIndex: 0
+      truthValue: 1
+    - beatStamp: 176.5
+      laneIndex: 3
+      truthValue: 0
+    - beatStamp: 177
+      laneIndex: 2
+      truthValue: 0
+    - beatStamp: 177.5
+      laneIndex: 1
+      truthValue: 1
+    - beatStamp: 178.5
+      laneIndex: 0
+      truthValue: 0
+    - beatStamp: 179.5
+      laneIndex: 1
+      truthValue: 1
+    - beatStamp: 180.5
+      laneIndex: 3
+      truthValue: 0
+    - beatStamp: 181
+      laneIndex: 2
+      truthValue: 1
+    - beatStamp: 181
+      laneIndex: 1
+      truthValue: 1
+    - beatStamp: 181.5
+      laneIndex: 0
+      truthValue: 0
+    - beatStamp: 182
+      laneIndex: 1
+      truthValue: 1
+    - beatStamp: 182
+      laneIndex: 2
+      truthValue: 1
+    - beatStamp: 182.5
+      laneIndex: 0
+      truthValue: 1
+    - beatStamp: 182.5
+      laneIndex: 3
+      truthValue: 1
+    - beatStamp: 183.5
+      laneIndex: 0
+      truthValue: 1
+    - beatStamp: 184.5
+      laneIndex: 0
+      truthValue: 0
+    - beatStamp: 184.5
+      laneIndex: 2
+      truthValue: 0
+    - beatStamp: 185.5
+      laneIndex: 1
+      truthValue: 1
+    - beatStamp: 186
+      laneIndex: 2
+      truthValue: 1
+    - beatStamp: 186.5
+      laneIndex: 0
+      truthValue: 0
+    - beatStamp: 186.5
+      laneIndex: 3
+      truthValue: 1
     - beatStamp: 188
       laneIndex: 0
       truthValue: 1
+    - beatStamp: 188
+      laneIndex: 3
+      truthValue: 0
     - beatStamp: 189
       laneIndex: 0
       truthValue: 0
@@ -3282,17 +3405,17 @@ MonoBehaviour:
       laneIndex: 1
       truthValue: 1
     - beatStamp: 204
-      laneIndex: 2
-      truthValue: 1
+      laneIndex: 1
+      truthValue: 0
     - beatStamp: 204
-      laneIndex: 1
-      truthValue: 0
-    - beatStamp: 205
-      laneIndex: 0
-      truthValue: 0
+      laneIndex: 2
+      truthValue: 1
     - beatStamp: 205
       laneIndex: 3
       truthValue: 1
+    - beatStamp: 205
+      laneIndex: 0
+      truthValue: 0
     - beatStamp: 206
       laneIndex: 2
       truthValue: 1
@@ -3306,10 +3429,10 @@ MonoBehaviour:
       laneIndex: 1
       truthValue: 0
     - beatStamp: 208
-      laneIndex: 3
+      laneIndex: 0
       truthValue: 1
     - beatStamp: 208
-      laneIndex: 0
+      laneIndex: 3
       truthValue: 1
     - beatStamp: 209
       laneIndex: 2
@@ -3432,10 +3555,10 @@ MonoBehaviour:
       laneIndex: 2
       truthValue: 0
     - beatStamp: 244
-      laneIndex: 3
+      laneIndex: 1
       truthValue: 1
     - beatStamp: 244
-      laneIndex: 1
+      laneIndex: 3
       truthValue: 1
     - beatStamp: 246
       laneIndex: 0
@@ -3453,10 +3576,10 @@ MonoBehaviour:
       laneIndex: 3
       truthValue: 0
     - beatStamp: 252
-      laneIndex: 2
+      laneIndex: 0
       truthValue: 1
     - beatStamp: 252
-      laneIndex: 0
+      laneIndex: 2
       truthValue: 1
     - beatStamp: 253
       laneIndex: 0
@@ -3482,144 +3605,33 @@ MonoBehaviour:
     - beatStamp: 256
       laneIndex: 0
       truthValue: 1
-    - beatStamp: 158.5
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 159
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 159.5
+    - beatStamp: 144.5
       laneIndex: 0
-      truthValue: 2
-    - beatStamp: 160.5
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 161
+      truthValue: 0
+    - beatStamp: 145.5
       laneIndex: 1
-      truthValue: 2
-    - beatStamp: 161.5
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 162.5
+      truthValue: 1
+    - beatStamp: 146.5
+      laneIndex: 1
+      truthValue: 0
+    - beatStamp: 147
+      laneIndex: 1
+      truthValue: 0
+    - beatStamp: 147.5
+      laneIndex: 2
+      truthValue: 1
+    - beatStamp: 148.5
+      laneIndex: 2
+      truthValue: 0
+    - beatStamp: 149
+      laneIndex: 2
+      truthValue: 0
+    - beatStamp: 149.5
       laneIndex: 3
-      truthValue: 2
-    - beatStamp: 163.5
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 164.5
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 165
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 165.5
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 166.5
+      truthValue: 1
+    - beatStamp: 150.5
       laneIndex: 3
-      truthValue: 2
-    - beatStamp: 166.5
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 167.5
-      laneIndex: 3
-      truthValue: 2
-    - beatStamp: 167.5
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 168.5
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 169.5
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 170
-      laneIndex: 3
-      truthValue: 2
-    - beatStamp: 170
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 171
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 172
-      laneIndex: 3
-      truthValue: 2
-    - beatStamp: 173
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 174
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 174.5
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 175
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 175.5
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 176.5
-      laneIndex: 3
-      truthValue: 2
-    - beatStamp: 177
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 177.5
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 178.5
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 179.5
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 180.5
-      laneIndex: 3
-      truthValue: 2
-    - beatStamp: 181
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 181
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 181.5
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 182
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 182
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 182.5
-      laneIndex: 3
-      truthValue: 2
-    - beatStamp: 182.5
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 183.5
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 184.5
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 184.5
-      laneIndex: 0
-      truthValue: 2
-    - beatStamp: 185.5
-      laneIndex: 1
-      truthValue: 2
-    - beatStamp: 186
-      laneIndex: 2
-      truthValue: 2
-    - beatStamp: 186.5
-      laneIndex: 3
-      truthValue: 2
-    - beatStamp: 186.5
-      laneIndex: 0
-      truthValue: 2
+      truthValue: 1
   easyPlayable: 0
   mediumPlayable: 1
   hardPlayable: 1
@@ -3631,8 +3643,8 @@ MonoBehaviour:
   - checkpointName: Checkpoint 3
     beatStamp: 96
   - checkpointName: Checkpoint 1
-    beatStamp: 160
+    beatStamp: 156
   - checkpointName: Checkpoint 4
     beatStamp: 232
   - checkpointName: Checkpoint 5
-    beatStamp: 252
+    beatStamp: 192

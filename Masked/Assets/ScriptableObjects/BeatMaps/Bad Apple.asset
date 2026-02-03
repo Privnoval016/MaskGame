@@ -21,6 +21,22 @@ MonoBehaviour:
   beatLineRate: 1
   superBeatLineRate: 4
   beatDataEntries: []
+  difficultyBeatMaps:
+  - difficulty: 0
+    beatDataEntries: []
+  - difficulty: 1
+    beatDataEntries: []
+  - difficulty: 2
+    beatDataEntries: []
+  - difficulty: 3
+    beatDataEntries: []
+  - difficulty: 4
+    beatDataEntries: []
+  easyPlayable: 0
+  mediumPlayable: 0
+  hardPlayable: 1
+  expertPlayable: 0
+  superExpertPlayable: 0
   checkpoints:
   - checkpointName: Checkpoint 2
     beatStamp: 32

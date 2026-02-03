@@ -77,16 +77,8 @@ public class SongSelectMenu : MonoBehaviour
         InitializeSongs();
         SetupUI();
         UpdateCardPositions(false);
-        
-        // Initialize difficulty selector position after UI is set up - wait a frame to ensure layout is complete
-        StartCoroutine(InitializeDifficultySelectorPosition());
     }
     
-    private System.Collections.IEnumerator InitializeDifficultySelectorPosition()
-    {
-        yield return null; // Wait one frame for UI layout to settle
-        UpdateDifficultySelector(false);
-    }
     
     private void OnEnable()
     {
@@ -734,14 +726,14 @@ public class SongSelectMenu : MonoBehaviour
                 // Use world position if different parents
                 Vector3 targetPos = targetButton.transform.position;
                 
-                if (animate || !animate)
+                if (animate)
                 {
                     Tween.Position(difficultySelector, targetPos, 0.3f, Ease.OutBack);
                 }
                 else
                 {
                     Debug.Log("Moving to position: " + targetPos);
-                    difficultySelector.position = targetPos;
+                    //difficultySelector.position = targetPos;
                 }
             }
         }
