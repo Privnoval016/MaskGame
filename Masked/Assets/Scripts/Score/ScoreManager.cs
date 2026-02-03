@@ -19,6 +19,28 @@ public class ScoreManager : MonoBehaviour
     public float maxCorrectCombo = 0; // Track maximum correct combo achieved
     public float maxAllCombo = 0; // Track maximum all combo achieved
     
+    private float DifficultyMultiplier
+    {
+        get
+        {
+            switch (GameManager.Instance?.livePlayData?.selectedDifficulty)
+            {
+                case Difficulty.Easy:
+                    return 1f;
+                case Difficulty.Medium:
+                    return 1.2f;
+                case Difficulty.Hard:
+                    return 1.3f;
+                case Difficulty.Expert:
+                    return 1.5f;
+                case Difficulty.SuperExpert:
+                    return 1.6f;
+                default:
+                    return 1f;
+            }
+        }
+    }
+    
     private EventBinding<LogicNoteHitEvent> hitEventBinding;
 
     private void Awake()
@@ -75,7 +97,7 @@ public class ScoreManager : MonoBehaviour
         
         if (e.isCorrect == true)
         {
-            totalScore += profile.correctScoreIncrease * comboMultiplier;
+            totalScore += profile.correctScoreIncrease * comboMultiplier * DifficultyMultiplier;
             allCombo++;
             correctCombo++;
             
@@ -85,7 +107,7 @@ public class ScoreManager : MonoBehaviour
         }
         else if (e.isCorrect == false)
         {
-            totalScore += profile.incorrectScoreIncrease * comboMultiplier;
+            totalScore += profile.incorrectScoreIncrease * comboMultiplier * DifficultyMultiplier;
             allCombo++;
             correctCombo = 0; // reset correct combo on incorrect hit
             

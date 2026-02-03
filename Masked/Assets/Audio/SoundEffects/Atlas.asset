@@ -22,3 +22,4 @@ MonoBehaviour:
   operationChange: {fileID: 11400000, guid: aec317088e58b4261984dcb3c949734c, type: 2}
   uiSelect: {fileID: 11400000, guid: 967d9232880724e6b947897091965ea5, type: 2}
   songBegin: {fileID: 11400000, guid: b576282b5f02247818b96767e3ef56c9, type: 2}
+  tickSound: {fileID: 11400000, guid: 31d9d9e6f4a5144e39769bb94abd829f, type: 2}

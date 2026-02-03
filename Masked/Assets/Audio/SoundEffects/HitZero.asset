@@ -15,7 +15,7 @@ MonoBehaviour:
   clip: {fileID: 8300000, guid: a60823488b4b545fcb5ed51b96a29692, type: 3}
   volume: 1
   cooldown: 0
-  maxSimultaneous: 4
+  maxSimultaneous: 32
   important: 0
   minPitch: 1
   maxPitch: 1

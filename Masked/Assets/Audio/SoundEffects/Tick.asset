@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 16f45aee17994b8abc8a350c3ec61c3f, type: 3}
-  m_Name: Miss
+  m_Name: Tick
   m_EditorClassIdentifier: 
-  clip: {fileID: 8300000, guid: 62c674cef542b425d8bc1c51733f0bf7, type: 3}
-  volume: 0.478
+  clip: {fileID: 8300000, guid: 35692dc30970d4ae2922e55f4cc3f4fe, type: 3}
+  volume: 0.3
   cooldown: 0
-  maxSimultaneous: 32
+  maxSimultaneous: 4
   important: 0
   minPitch: 1
   maxPitch: 1

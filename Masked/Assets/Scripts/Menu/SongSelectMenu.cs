@@ -78,7 +78,13 @@ public class SongSelectMenu : MonoBehaviour
         SetupUI();
         UpdateCardPositions(false);
         
-        // Initialize difficulty selector position after UI is set up
+        // Initialize difficulty selector position after UI is set up - wait a frame to ensure layout is complete
+        StartCoroutine(InitializeDifficultySelectorPosition());
+    }
+    
+    private System.Collections.IEnumerator InitializeDifficultySelectorPosition()
+    {
+        yield return null; // Wait one frame for UI layout to settle
         UpdateDifficultySelector(false);
     }
     
@@ -136,6 +142,9 @@ public class SongSelectMenu : MonoBehaviour
         {
             UpdateCardPositions(false);
         }
+        
+        // Reposition difficulty selector after menu is re-enabled
+        UpdateDifficultySelector(false);
         
         Debug.Log("Menu state reset complete!");
     }
@@ -477,8 +486,23 @@ public class SongSelectMenu : MonoBehaviour
     
     private void AnimateToSelectedState()
     {
+        // Check if current difficulty is playable for this song, if not switch to first available
+        if (selectedCard != null && selectedCard.beatMapData != null)
+        {
+            if (!selectedCard.beatMapData.IsDifficultyPlayable(selectedDifficulty))
+            {
+                // Find first playable difficulty
+                Difficulty firstPlayable = FindFirstPlayableDifficulty(selectedCard.beatMapData);
+                selectedDifficulty = firstPlayable;
+                Debug.Log($"Current difficulty not available, switched to {firstPlayable}");
+            }
+        }
+        
         // Update difficulty button states based on what's playable for this song
         UpdateDifficultyButtonStates();
+        
+        // Update difficulty selector to show correct difficulty (without animation since panel is appearing)
+        UpdateDifficultySelector(false);
         
         // Move selected card to the left by the configured offset (keep its current scale)
         Vector3 selectedTargetPos = new Vector3(selectedCardOffsetX, selectedCard.transform.localPosition.y, 0);
@@ -653,11 +677,32 @@ public class SongSelectMenu : MonoBehaviour
         }
     }
     
+    private Difficulty FindFirstPlayableDifficulty(BeatMapData beatMapData)
+    {
+        if (beatMapData == null) return Difficulty.Medium; // Default fallback
+        
+        // Check difficulties in order: Easy, Medium, Hard, Expert, SuperExpert
+        if (beatMapData.IsDifficultyPlayable(Difficulty.Easy)) return Difficulty.Easy;
+        if (beatMapData.IsDifficultyPlayable(Difficulty.Medium)) return Difficulty.Medium;
+        if (beatMapData.IsDifficultyPlayable(Difficulty.Hard)) return Difficulty.Hard;
+        if (beatMapData.IsDifficultyPlayable(Difficulty.Expert)) return Difficulty.Expert;
+        if (beatMapData.IsDifficultyPlayable(Difficulty.SuperExpert)) return Difficulty.SuperExpert;
+        
+        // If none are playable (shouldn't happen), default to Medium
+        Debug.LogWarning($"No playable difficulties found for {beatMapData.songTitle}, defaulting to Medium");
+        return Difficulty.Medium;
+    }
+    
     private void UpdateDifficultySelector(bool animate)
     {
-        if (difficultySelector == null) return;
+        if (difficultySelector == null)
+        {
+            Debug.LogWarning("Difficulty selector is null!");
+            return;
+        }
         
         Button targetButton = null;
+        
         switch (selectedDifficulty)
         {
             case Difficulty.Easy: targetButton = easyButton; break;
@@ -669,16 +714,40 @@ public class SongSelectMenu : MonoBehaviour
         
         if (targetButton != null)
         {
-            Vector3 targetPos = targetButton.transform.position;
-            
-            if (animate)
+            // Check if selector and button share the same parent (for local positioning)
+            if (difficultySelector.parent == targetButton.transform.parent)
             {
-                Tween.Position(difficultySelector, targetPos, 0.3f, Ease.OutBack);
+                // Use local position if they're siblings
+                Vector3 targetPos = targetButton.transform.localPosition;
+                
+                if (animate)
+                {
+                    Tween.LocalPosition(difficultySelector, targetPos, 0.3f, Ease.OutBack);
+                }
+                else
+                {
+                    difficultySelector.localPosition = targetPos;
+                }
             }
             else
             {
-                difficultySelector.position = targetPos;
+                // Use world position if different parents
+                Vector3 targetPos = targetButton.transform.position;
+                
+                if (animate || !animate)
+                {
+                    Tween.Position(difficultySelector, targetPos, 0.3f, Ease.OutBack);
+                }
+                else
+                {
+                    Debug.Log("Moving to position: " + targetPos);
+                    difficultySelector.position = targetPos;
+                }
             }
+        }
+        else
+        {
+            Debug.LogWarning($"Target button for difficulty {selectedDifficulty} is null!");
         }
     }
     
@@ -876,4 +945,3 @@ public class SongSelectMenu : MonoBehaviour
         Tween.Delay(transitionDuration * 0.3f).OnComplete(() => UpdateCardPositions(true));
     }
 }
-
